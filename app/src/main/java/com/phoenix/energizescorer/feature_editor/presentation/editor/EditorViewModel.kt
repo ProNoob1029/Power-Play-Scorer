@@ -15,8 +15,7 @@ class EditorViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val matchUseCases: MatchUseCases
 ): ViewModel() {
-    private val _state = MutableStateFlow(Match())
-    val state = _state.asStateFlow()
+    val state = MutableStateFlow(Match())
 
     private var job: Job? = null
 
@@ -33,7 +32,7 @@ class EditorViewModel @Inject constructor(
         job = matchUseCases.getMatch(key)
             .onEach { newMatch ->
                 newMatch?.let { match ->
-                    _state.update { match }
+                    state.update { match }
                 }
             }
             .launchIn(viewModelScope)

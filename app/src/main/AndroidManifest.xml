@@ -17,7 +17,6 @@
         <activity
             android:name=".feature_editor.presentation.MainActivity"
             android:exported="true"
-            android:label="@string/editor"
             android:theme="@style/Theme.EnergizeScorer">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

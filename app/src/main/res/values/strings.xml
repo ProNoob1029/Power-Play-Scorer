@@ -1,5 +1,4 @@
 <resources>
     <string name="app_name">Energize Scorer</string>
-    <string name="editor">Editor</string>
     <string name="create_match">Create match</string>
 </resources>
