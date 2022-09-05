@@ -52,9 +52,9 @@ fun screenList(
     mutableState: MutableStateFlow<Match>
 ): List<@Composable (modifier: Modifier) -> Unit> {
     return listOf(
-        {
+        { modifier ->
             TextField(
-                modifier = it,
+                modifier = modifier,
                 label = "Title",
                 text = state.value.title,
                 onValueChange = { newString ->
