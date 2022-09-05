@@ -18,7 +18,7 @@ fun Navigation() {
             ListScreen(navController = navController)
         }
         composable(
-            route = Screen.EditorScreen.route + "?name={name}",
+            route = Screen.EditorScreen.route + "?key={key}",
             arguments = listOf(
                 navArgument(name = "key") {
                     type = NavType.StringType

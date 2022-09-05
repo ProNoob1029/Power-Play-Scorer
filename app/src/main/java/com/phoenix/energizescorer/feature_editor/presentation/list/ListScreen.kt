@@ -12,6 +12,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -19,6 +20,7 @@ import com.phoenix.energizescorer.feature_editor.domain.util.Order
 import com.phoenix.energizescorer.feature_editor.domain.util.OrderType
 import com.phoenix.energizescorer.feature_editor.presentation.Screen
 import com.phoenix.energizescorer.feature_editor.presentation.list.components.ItemCard
+import com.phoenix.energizescorer.R
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
@@ -36,7 +38,7 @@ fun ListScreen(
                 },
                 containerColor = MaterialTheme.colorScheme.primary,
             ) {
-                Icon(imageVector = Icons.Default.Add, contentDescription = "Add match")
+                Icon(imageVector = Icons.Default.Add, contentDescription = stringResource(id = R.string.create_match))
             }
         }
     ) { paddingValues ->

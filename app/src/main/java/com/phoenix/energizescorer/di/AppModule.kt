@@ -5,6 +5,7 @@ import androidx.room.Room
 import com.phoenix.energizescorer.feature_editor.data.data_source.MatchDatabase
 import com.phoenix.energizescorer.feature_editor.data.repository.RepositoryImpl
 import com.phoenix.energizescorer.feature_editor.domain.repository.Repository
+import com.phoenix.energizescorer.feature_editor.domain.use_case.GetMatch
 import com.phoenix.energizescorer.feature_editor.domain.use_case.GetMatches
 import com.phoenix.energizescorer.feature_editor.domain.use_case.MatchUseCases
 import dagger.Module
@@ -37,7 +38,8 @@ object AppModule {
     @Singleton
     fun provideMatchUseCases(repository: Repository): MatchUseCases {
         return MatchUseCases(
-            getMatches = GetMatches(repository)
+            getMatches = GetMatches(repository),
+            getMatch = GetMatch(repository)
         )
     }
 }
