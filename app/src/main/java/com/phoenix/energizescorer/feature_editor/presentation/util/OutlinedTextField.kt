@@ -58,7 +58,7 @@ fun OutlinedTextField(
 
 
                 MyLabel(
-                    isEmpty = transformedText.isEmpty(),
+                    isEmpty = remember { transformedText.isEmpty() },
                     interactionSource = interactionSource,
                     label = label,
                     bodyLarge = textStyle,

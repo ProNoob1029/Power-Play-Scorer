@@ -26,7 +26,7 @@ fun EditorScreen(
     val state = viewModel.state.collectAsState()
     val screenList = remember {
         screenList(
-            _state = state,
+            state = state,
             mutableState = viewModel.state
         )
     }
@@ -45,37 +45,16 @@ fun EditorScreen(
 }
 
 fun screenList(
-    _state: State<Match>,
+    state: State<Match>,
     mutableState: MutableStateFlow<Match>
 ): List<@Composable (modifier: Modifier) -> Unit> {
-    val state by _state
-    val autoPoints = derivedStateOf {
-        _state.value.let {
-            it.autoDuck * 10 +
-                    it.autoFreightBonus1 * 10 +
-                    it.autoFreightBonus2 * 10 * it.twoTeams +
-                    it.autoStorage * 2 +
-                    (it.autoHub1 + it.autoHub2 + it.autoHub3) * 6 +
-                    when(it.autoParked1) {
-                        false -> 3
-                        true -> 5
-                        else -> 0
-                    } * (it.autoFullyParked1 + 1) +
-                    when(it.autoParked2) {
-                        false -> 3
-                        true -> 5
-                        else -> 0
-                    } * (it.autoFullyParked2 + 1) * it.twoTeams +
-                    it.alliance * 2
-        }
-    }
-
     return listOf(
         { modifier ->
+            val text by remember { derivedStateOf { state.value.title } }
             TextField(
                 modifier = modifier,
                 label = "Title",
-                text = state.title,
+                text = text,
                 onValueChange = { newString ->
                     mutableState.update {
                         it.copy(
@@ -87,11 +66,12 @@ fun screenList(
             )
         },
         { modifier ->
+            val activeIndex by remember { derivedStateOf { state.value.alliance } }
             AllianceButtons(
                 modifier = modifier,
                 firstText = "Red Alliance",
                 secondText = "Blue Alliance",
-                activeIndex = state.alliance,
+                activeIndex = activeIndex,
                 onButtonClicked =
                 { index ->
                     mutableState.update { match ->
@@ -104,10 +84,32 @@ fun screenList(
             )
         },
         { modifier ->
+            val autoPoints by remember {
+                derivedStateOf {
+                    state.value.let {
+                        it.autoDuck * 10 +
+                                it.autoFreightBonus1 * 10 +
+                                it.autoFreightBonus2 * 10 * it.twoTeams +
+                                it.autoStorage * 2 +
+                                (it.autoHub1 + it.autoHub2 + it.autoHub3) * 6 +
+                                when(it.autoParked1) {
+                                    false -> 3
+                                    true -> 5
+                                    else -> 0
+                                } * (it.autoFullyParked1 + 1) +
+                                when(it.autoParked2) {
+                                    false -> 3
+                                    true -> 5
+                                    else -> 0
+                                } * (it.autoFullyParked2 + 1) * it.twoTeams +
+                                it.alliance * 2
+                    }
+                }
+            }
             Title(
                 modifier = modifier,
                 title = "Autonomous points: ",
-                counter = autoPoints.value
+                counter = autoPoints
             )
         }
     )
