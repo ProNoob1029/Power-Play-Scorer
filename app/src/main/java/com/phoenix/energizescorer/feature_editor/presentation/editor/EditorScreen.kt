@@ -3,10 +3,8 @@ package com.phoenix.energizescorer.feature_editor.presentation.editor
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
@@ -16,6 +14,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.phoenix.energizescorer.feature_editor.domain.model.Match
+import com.phoenix.energizescorer.feature_editor.presentation.editor.components.AllianceButtons
 import com.phoenix.energizescorer.feature_editor.presentation.editor.components.TextField
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
@@ -67,24 +66,22 @@ fun screenList(
                 enabled = true
             )
         },
-        {
-            Text(text = state.value.title)
-        },
-        {
-            Text(text = state.value.autoHub1.toString())
-        },
-        {
-            Button(
-                onClick = {
+        { modifier ->
+            AllianceButtons(
+                modifier = modifier,
+                firstText = "Red Alliance",
+                secondText = "Blue Alliance",
+                activeIndex = state.value.alliance,
+                onButtonClicked =
+                { index ->
                     mutableState.update { match ->
                         match.copy(
-                            autoHub1 = match.autoHub1 + 1
+                            alliance = if (match.alliance == index) null else index
                         )
                     }
-                }
-            ) {
-                Text(text = "wow")
-            }
+                },
+                enabled = true
+            )
         }
     )
 }
