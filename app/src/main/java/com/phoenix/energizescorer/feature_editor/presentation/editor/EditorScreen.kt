@@ -12,9 +12,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.phoenix.energizescorer.feature_editor.domain.model.Match
-import com.phoenix.energizescorer.feature_editor.presentation.editor.components.AllianceButtons
-import com.phoenix.energizescorer.feature_editor.presentation.editor.components.TextField
-import com.phoenix.energizescorer.feature_editor.presentation.editor.components.Title
+import com.phoenix.energizescorer.feature_editor.presentation.editor.components.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 
@@ -33,7 +31,7 @@ fun EditorScreen(
             editEnabled = editEnabled
         )
     }
-
+    val twoTeams by remember { derivedStateOf { state.value.twoTeams } }
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(
@@ -44,6 +42,18 @@ fun EditorScreen(
             ) {
                 Icon(Icons.Default.Edit, "Edit")
             }
+        },
+        topBar = {
+            TopAppBar(
+                checked = twoTeams,
+                onCheckedChange = { newChecked ->
+                    viewModel.state.update { match ->
+                        match.copy(
+                            twoTeams = newChecked
+                        )
+                    }
+                }
+            )
         }
     ) { paddingValues ->
         LazyColumn(
@@ -123,6 +133,52 @@ fun screenList(
                 modifier = modifier,
                 title = "Autonomous points: ",
                 counter = autoPoints
+            )
+        },
+        { modifier ->
+            val text by remember {
+                derivedStateOf {
+                    if (state.value.twoTeams)
+                        "Fully parked 1: "
+                    else
+                        "Fully parked: "
+                }
+            }
+            val checked by remember { derivedStateOf { state.value.autoFullyParked1 } }
+            TextSwitch(
+                modifier = modifier,
+                text = text,
+                checked = checked,
+                specialColor = false,
+                visible = true,
+                enabled = editEnabled.value,
+                onChange = { newChecked ->
+                    mutableState.update { match ->
+                        match.copy(
+                            autoFullyParked1 = newChecked
+                        )
+                    }
+                }
+            )
+        },
+        { modifier ->
+            val text = "Fully parked 2: "
+            val checked by remember { derivedStateOf { state.value.autoFullyParked2 } }
+            val visible by remember { derivedStateOf { state.value.twoTeams } }
+            TextSwitch(
+                modifier = modifier,
+                text = text,
+                checked = checked,
+                specialColor = true,
+                visible = visible,
+                enabled = editEnabled.value,
+                onChange = { newChecked ->
+                    mutableState.update { match ->
+                        match.copy(
+                            autoFullyParked1 = newChecked
+                        )
+                    }
+                }
             )
         }
     )
