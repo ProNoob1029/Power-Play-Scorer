@@ -16,6 +16,7 @@ class EditorViewModel @Inject constructor(
     private val matchUseCases: MatchUseCases
 ): ViewModel() {
     val state = MutableStateFlow(Match())
+    val isEditEnabled = MutableStateFlow(false)
 
     private var job: Job? = null
 

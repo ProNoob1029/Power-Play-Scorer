@@ -52,13 +52,12 @@ fun OutlinedTextField(
         textStyle = textStyle,
         label = {
             if (label != null) {
-                val transformedText = remember(value, visualTransformation) {
-                    visualTransformation.filter(AnnotatedString(value))
-                }.text.text
-
+                val isEmpty = remember(value, visualTransformation) {
+                    visualTransformation.filter(AnnotatedString(value)).text.text.isEmpty()
+                }
 
                 MyLabel(
-                    isEmpty = remember { transformedText.isEmpty() },
+                    isEmpty = isEmpty,
                     interactionSource = interactionSource,
                     label = label,
                     bodyLarge = textStyle,
