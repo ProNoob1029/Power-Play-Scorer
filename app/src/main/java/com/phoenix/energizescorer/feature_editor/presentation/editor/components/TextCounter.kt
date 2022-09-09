@@ -39,8 +39,7 @@ fun TextCounter (
         modifier = modifier.padding(paddingValues),
         counter = counter,
         textStyle = textStyle,
-        text = text,
-        enabled = enabled
+        text = text
     ) { modifier1, modifier2 ->
         Text(modifier = modifier1, text = text, style = textStyle)
         Counter(
@@ -59,7 +58,6 @@ private fun Measure (
     counter: Int,
     textStyle: TextStyle,
     text: String,
-    enabled: Boolean,
     content: @Composable (modifier1: Modifier, modifier2: Modifier) -> Unit,
 ) {
     MeasureView(
@@ -71,7 +69,7 @@ private fun Measure (
                     counter = counter,
                     textStyle = textStyle,
                     onClick = {},
-                    enabled = enabled
+                    enabled = true
                 )
             }
         },
@@ -102,9 +100,9 @@ internal fun Counter (
     val minus = painterResource(id = R.drawable.ic_baseline_minus_24)
     val view = LocalView.current
 
-    Row {
+    Row(modifier = modifier) {
         Text (
-            modifier = modifier
+            modifier = Modifier
                 .widthIn(max = 66.dp)
                 .height(50.dp)
                 .fillMaxWidth()
