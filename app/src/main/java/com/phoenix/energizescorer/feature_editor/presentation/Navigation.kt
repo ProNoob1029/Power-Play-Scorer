@@ -27,7 +27,7 @@ fun Navigation() {
                 }
             )
         ) {
-            EditorScreen(navController = navController)
+            EditorScreen()
         }
     }
 }

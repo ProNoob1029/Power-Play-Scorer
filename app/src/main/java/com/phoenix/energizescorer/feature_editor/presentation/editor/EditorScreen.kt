@@ -9,8 +9,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.phoenix.energizescorer.feature_editor.domain.model.Match
 import com.phoenix.energizescorer.feature_editor.presentation.editor.components.*
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,7 +17,7 @@ import kotlinx.coroutines.flow.update
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditorScreen(
-    navController: NavController = rememberNavController(),
+    //navController: NavController = rememberNavController(),
     viewModel: EditorViewModel = hiltViewModel()
 ) {
     val state = viewModel.state.collectAsState()
@@ -175,8 +173,26 @@ fun screenList(
                 onChange = { newChecked ->
                     mutableState.update { match ->
                         match.copy(
-                            autoFullyParked1 = newChecked
+                            autoFullyParked2 = newChecked
                         )
+                    }
+                }
+            )
+        },
+        { modifier ->
+            val counter by remember { derivedStateOf { state.value.autoStorage } }
+            TextCounter(
+                modifier = modifier,
+                text = "Freight in storage: ",
+                counter = counter,
+                enabled = editEnabled.value,
+                onClick = { add ->
+                    mutableState.update { match ->
+                        if (match.autoStorage + add >= 0) {
+                            match.copy(
+                                autoStorage = match.autoStorage + add
+                            )
+                        } else match
                     }
                 }
             )

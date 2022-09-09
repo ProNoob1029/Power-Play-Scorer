@@ -44,8 +44,12 @@ fun TextSwitch (
         modifier = modifier,
         targetState = visible,
         transitionSpec = {
-            slideIntoContainer(towards = AnimatedContentScope.SlideDirection.Down) with
-                    slideOutOfContainer(towards = AnimatedContentScope.SlideDirection.Down)
+            slideIntoContainer(
+                towards = AnimatedContentScope.SlideDirection.Down
+            ) + fadeIn() with
+                    slideOutOfContainer(
+                        towards = AnimatedContentScope.SlideDirection.Up
+                    ) + fadeOut()
         }
     ) { targetState1 ->
         if (targetState1) {
