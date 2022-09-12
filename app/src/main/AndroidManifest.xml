@@ -11,13 +11,13 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.EnergizeScorer"
+        android:theme="@style/Theme.PowerPlayScorer"
         tools:targetApi="31">
         <profileable android:shell="true"/>
         <activity
             android:name=".feature_editor.presentation.MainActivity"
             android:exported="true"
-            android:theme="@style/Theme.EnergizeScorer">
+            android:theme="@style/Theme.PowerPlayScorer">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
