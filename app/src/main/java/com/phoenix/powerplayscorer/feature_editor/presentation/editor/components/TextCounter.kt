@@ -5,6 +5,8 @@ import androidx.compose.animation.*
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.VisibilityThreshold
 import androidx.compose.animation.core.spring
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -13,6 +15,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalView
@@ -23,6 +28,7 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import com.phoenix.powerplayscorer.R
 import com.phoenix.powerplayscorer.feature_editor.presentation.util.MeasureView
+import kotlinx.coroutines.delay
 
 
 @Composable
@@ -33,6 +39,8 @@ fun TextCounter (
     textStyle: TextStyle = MaterialTheme.typography.titleLarge,
     counter: Int,
     enabled: Boolean,
+    lowerLimit: Int,
+    upperLimit: Int,
     onClick: (add: Int) -> Unit
 ) {
     Measure(
@@ -48,6 +56,8 @@ fun TextCounter (
             textStyle = textStyle,
             onClick = onClick,
             enabled = enabled,
+            lowerLimit = lowerLimit,
+            upperLimit = upperLimit
         )
     }
 }
@@ -96,16 +106,19 @@ internal fun Counter (
     textStyle: TextStyle,
     onClick: (add: Int) -> Unit,
     enabled: Boolean,
+    lowerLimit: Int = 0,
+    upperLimit: Int = 30,
 ) {
     val minus = painterResource(id = R.drawable.ic_baseline_minus_24)
-    val view = LocalView.current
 
-    Row(modifier = modifier) {
+
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
         Text (
             modifier = Modifier
-                .widthIn(max = 66.dp)
-                .height(50.dp)
-                .fillMaxWidth()
+                .widthIn(min = 52.dp)
                 .wrapContentHeight(),
             text = "$counter",
             style = textStyle.copy(fontFeatureSettings = "tnum"),
@@ -132,43 +145,63 @@ internal fun Counter (
         ) { targetState ->
             if (targetState) {
                 Row {
-                    Box(
-                        modifier = Modifier
-                            .widthIn(max = 68.dp)
-                            .fillMaxWidth(),
-                        contentAlignment = Alignment.Center
+                    CounterButton(
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                        onClick = { onClick(-1) },
+                        enabled = counter > lowerLimit
                     ) {
-                        FilledIconButton(
-                            modifier = Modifier.size(52.dp, 48.dp),
-                            onClick = {
-                                view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
-                                onClick(-1)
-                            },
-                            enabled = counter > 0
-                        ) {
-                            Icon(minus , contentDescription = "Minus")
-                        }
+                        Icon(minus , contentDescription = "Subtract")
                     }
-                    Box(
-                        modifier = Modifier
-                            .widthIn(max = 66.dp)
-                            .fillMaxWidth(),
-                        contentAlignment = Alignment.CenterEnd
+                    CounterButton(
+                        onClick = { onClick(1) },
+                        enabled = counter < upperLimit
                     ) {
-                        FilledIconButton(
-                            modifier = Modifier.size(52.dp, 48.dp),
-                            onClick = {
-                                view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
-                                onClick(1)
-                            }
-                        ) {
-                            Icon(Icons.Filled.Add, contentDescription = "Add")
-                        }
+                        Icon(Icons.Filled.Add, contentDescription = "Add")
                     }
                 }
             } else {
-                Spacer(modifier = Modifier.height(50.dp))
+                Spacer(modifier = Modifier.height(48.dp))
             }
+        }
+    }
+}
+
+@Composable
+fun CounterButton(
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit,
+    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
+    enabled: Boolean = true,
+    maxDelayMillis: Long = 500,
+    minDelayMillis: Long = 100,
+    delayDecayFactor: Float = .2f,
+    content: @Composable () -> Unit
+) {
+    val view = LocalView.current
+    val isPressed by interactionSource.collectIsPressedAsState()
+
+    FilledIconButton(
+        modifier = modifier
+            .size(52.dp, 48.dp),
+        onClick = {
+            view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
+            onClick()
+        },
+        content = content,
+        interactionSource = interactionSource,
+        enabled = enabled
+    )
+
+    LaunchedEffect(key1 = isPressed, key2 = enabled) {
+        var currentDelayMillis = maxDelayMillis
+
+        while (enabled && isPressed) {
+            onClick()
+            view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
+            delay(currentDelayMillis)
+            currentDelayMillis =
+                (currentDelayMillis - (currentDelayMillis * delayDecayFactor))
+                    .toLong().coerceAtLeast(minDelayMillis)
         }
     }
 }

@@ -71,6 +71,12 @@ fun screenList(
     mutableState: MutableStateFlow<Match>,
     editEnabled: State<Boolean>
 ): List<@Composable (modifier: Modifier) -> Unit> {
+    val autoUpperLimit by derivedStateOf {
+        12 - state.value.let {
+            it.autoTerminal + it.autoGroundJunction + it.autoLowJunction +
+                    it.autoMediumJunction + it.autoHighJunction
+        }
+    }
     return listOf(
         { modifier ->
             val text by remember { derivedStateOf { state.value.title } }
@@ -109,21 +115,21 @@ fun screenList(
             val autoPoints by remember {
                 derivedStateOf {
                     state.value.let {
-                        it.autoDuck * 10 +
-                        it.autoFreightBonus1 * 10 +
-                        it.autoFreightBonus2 * 10 * it.twoTeams +
-                        it.autoStorage * 2 +
-                        (it.autoHub1 + it.autoHub2 + it.autoHub3) * 6 +
-                        when(it.autoParked1) {
-                            false -> 3
-                            true -> 5
+                        it.autoTerminal +
+                        it.autoGroundJunction * 2 +
+                        it.autoLowJunction * 3 +
+                        it.autoMediumJunction * 4 +
+                        it.autoHighJunction * 5 +
+                        when (it.autoParked1) {
+                            false -> 2
+                            true -> 10 * it.customSignalSleeve1
                             else -> 0
-                        } * (it.autoFullyParked1 + 1) +
-                        when(it.autoParked2) {
-                            false -> 3
-                            true -> 5
+                        } +
+                        when (it.autoParked2) {
+                            false -> 2
+                            true -> 10 * it.customSignalSleeve2
                             else -> 0
-                        } * (it.autoFullyParked2 + 1) * it.twoTeams
+                        }
                     }
                 }
             }
@@ -134,65 +140,92 @@ fun screenList(
             )
         },
         { modifier ->
-            val text by remember {
-                derivedStateOf {
-                    if (state.value.twoTeams)
-                        "Fully parked 1: "
-                    else
-                        "Fully parked: "
-                }
-            }
-            val checked by remember { derivedStateOf { state.value.autoFullyParked1 } }
-            TextSwitch(
-                modifier = modifier,
-                text = text,
-                checked = checked,
-                specialColor = false,
-                visible = true,
-                enabled = editEnabled.value,
-                onChange = { newChecked ->
-                    mutableState.update { match ->
-                        match.copy(
-                            autoFullyParked1 = newChecked
-                        )
-                    }
-                }
-            )
-        },
-        { modifier ->
-            val text = "Fully parked 2: "
-            val checked by remember { derivedStateOf { state.value.autoFullyParked2 } }
-            val visible by remember { derivedStateOf { state.value.twoTeams } }
-            TextSwitch(
-                modifier = modifier,
-                text = text,
-                checked = checked,
-                specialColor = true,
-                visible = visible,
-                enabled = editEnabled.value,
-                onChange = { newChecked ->
-                    mutableState.update { match ->
-                        match.copy(
-                            autoFullyParked2 = newChecked
-                        )
-                    }
-                }
-            )
-        },
-        { modifier ->
-            val counter by remember { derivedStateOf { state.value.autoStorage } }
+            val counter by remember { derivedStateOf { state.value.autoTerminal } }
+            //val upperLimit by remember { derivedStateOf {  } }
             TextCounter(
                 modifier = modifier,
-                text = "Freight in storage: ",
+                text = "Cones in Terminal: ",
                 counter = counter,
                 enabled = editEnabled.value,
+                lowerLimit = 0,
+                upperLimit = autoUpperLimit + counter,
                 onClick = { add ->
                     mutableState.update { match ->
-                        if (match.autoStorage + add >= 0) {
-                            match.copy(
-                                autoStorage = match.autoStorage + add
-                            )
-                        } else match
+                        match.copy(
+                            autoTerminal = match.autoTerminal + add
+                        )
+                    }
+                }
+            )
+        },
+        { modifier ->
+            val counter by remember { derivedStateOf { state.value.autoGroundJunction } }
+            TextCounter(
+                modifier = modifier,
+                text = "Cones in Ground Junction: ",
+                counter = counter,
+                enabled = editEnabled.value,
+                lowerLimit = 0,
+                upperLimit = autoUpperLimit + counter,
+                onClick = { add ->
+                    mutableState.update { match ->
+                        match.copy(
+                            autoGroundJunction = match.autoGroundJunction + add
+                        )
+                    }
+                }
+            )
+        },
+        { modifier ->
+            val counter by remember { derivedStateOf { state.value.autoLowJunction } }
+            TextCounter(
+                modifier = modifier,
+                text = "Cones in Low Junction: ",
+                counter = counter,
+                enabled = editEnabled.value,
+                lowerLimit = 0,
+                upperLimit = autoUpperLimit + counter,
+                onClick = { add ->
+                    mutableState.update { match ->
+                        match.copy(
+                            autoLowJunction = match.autoLowJunction + add
+                        )
+                    }
+                }
+            )
+        },
+        { modifier ->
+            val counter by remember { derivedStateOf { state.value.autoMediumJunction } }
+            TextCounter(
+                modifier = modifier,
+                text = "Cones in Medium Junction: ",
+                counter = counter,
+                enabled = editEnabled.value,
+                lowerLimit = 0,
+                upperLimit = autoUpperLimit + counter,
+                onClick = { add ->
+                    mutableState.update { match ->
+                        match.copy(
+                            autoMediumJunction = match.autoMediumJunction + add
+                        )
+                    }
+                }
+            )
+        },
+        { modifier ->
+            val counter by remember { derivedStateOf { state.value.autoHighJunction } }
+            TextCounter(
+                modifier = modifier,
+                text = "Cones in High Junction: ",
+                counter = counter,
+                enabled = editEnabled.value,
+                lowerLimit = 0,
+                upperLimit = autoUpperLimit + counter,
+                onClick = { add ->
+                    mutableState.update { match ->
+                        match.copy(
+                            autoHighJunction = match.autoHighJunction + add
+                        )
                     }
                 }
             )
