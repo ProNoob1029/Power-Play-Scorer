@@ -28,6 +28,10 @@ class EditorViewModel @Inject constructor(
         }
     }
 
+    fun reset() {
+        state.update { Match() }
+    }
+
     private fun getMatch(key: String) {
         job?.cancel()
         job = matchUseCases.getMatch(key)

@@ -51,10 +51,14 @@ fun PowerPlayScorerTheme(
     val view = LocalView.current
     if (!view.isInEditMode) {
         SideEffect {
-            (view.context as Activity).window.statusBarColor = colorScheme.primaryContainer.toArgb()
-            (view.context as Activity).window.navigationBarColor = colorScheme.background.toArgb()
+            (view.context as Activity).window.statusBarColor = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+                colorScheme.primaryContainer.toArgb()
+            else colorScheme.primary.toArgb()
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+                (view.context as Activity).window.navigationBarColor = colorScheme.background.toArgb()
             //ViewCompat.getWindowInsetsController(view)?.isAppearanceLightStatusBars = darkTheme
             WindowCompat.getInsetsController((view.context as Activity).window, view).isAppearanceLightStatusBars = !darkTheme
+            WindowCompat.getInsetsController((view.context as Activity).window, view).isAppearanceLightNavigationBars = !darkTheme
         }
     }
 

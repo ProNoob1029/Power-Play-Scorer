@@ -40,6 +40,14 @@ fun TextSwitch (
     else
         SwitchDefaults.colors()
 
+    val colorChecked = if (specialColor)
+        MaterialTheme.colorScheme.tertiary
+    else MaterialTheme.colorScheme.primary
+
+    val colorUnChecked = if (specialColor)
+        MaterialTheme.colorScheme.tertiaryContainer
+    else MaterialTheme.colorScheme.primaryContainer
+
     AnimatedContent(
         modifier = modifier,
         targetState = visible,
@@ -96,9 +104,9 @@ fun TextSwitch (
                             modifier = modifier2
                                 .padding(vertical = 8.dp)
                                 .size(52.dp, 32.dp),
-                            color = if (specialColor)
-                                MaterialTheme.colorScheme.tertiaryContainer
-                            else MaterialTheme.colorScheme.primaryContainer,
+                            color = if (checked)
+                                colorChecked
+                            else colorUnChecked,
                             shape = CircleShape
                         ) {
                             if (checked) {

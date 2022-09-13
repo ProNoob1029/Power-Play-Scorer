@@ -8,12 +8,10 @@ import androidx.compose.animation.core.spring
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.FilledIconButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -100,7 +98,7 @@ private fun Measure (
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-internal fun Counter (
+private fun Counter (
     modifier: Modifier = Modifier,
     counter: Int,
     textStyle: TextStyle,
@@ -111,19 +109,24 @@ internal fun Counter (
 ) {
     val minus = painterResource(id = R.drawable.ic_baseline_minus_24)
 
-
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text (
-            modifier = Modifier
-                .widthIn(min = 52.dp)
-                .wrapContentHeight(),
-            text = "$counter",
-            style = textStyle.copy(fontFeatureSettings = "tnum"),
-            textAlign = TextAlign.Center
-        )
+        Surface(
+            shape = CircleShape,
+            color = MaterialTheme.colorScheme.primaryContainer
+        ) {
+            Text (
+                modifier = Modifier
+                    .widthIn(min = 52.dp)
+                    .height(32.dp)
+                    .wrapContentHeight(),
+                text = "$counter",
+                style = textStyle.copy(fontFeatureSettings = "tnum"),
+                textAlign = TextAlign.Center
+            )
+        }
 
         AnimatedContent(
             targetState = enabled,
@@ -167,7 +170,7 @@ internal fun Counter (
 }
 
 @Composable
-fun CounterButton(
+private fun CounterButton(
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },

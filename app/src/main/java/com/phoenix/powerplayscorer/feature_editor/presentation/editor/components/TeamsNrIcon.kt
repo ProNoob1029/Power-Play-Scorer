@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 fun TeamsNrIcon(
     modifier: Modifier = Modifier,
     checked: Boolean,
+    editEnabled: Boolean,
     onCheckedChange: (Boolean) -> Unit
 ) {
     val color by animateColorAsState(
@@ -41,6 +42,7 @@ fun TeamsNrIcon(
     Surface(
         modifier = modifier,
         checked = checked,
+        enabled = editEnabled,
         onCheckedChange = {
             view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
             onCheckedChange(it)

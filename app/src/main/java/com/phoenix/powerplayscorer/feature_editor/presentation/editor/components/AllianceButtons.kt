@@ -127,7 +127,7 @@ fun AllianceButtons (
 }
 
 @Composable
-internal fun Measure (
+private fun Measure (
     modifier: Modifier = Modifier,
     firstText: String,
     secondText: String,
