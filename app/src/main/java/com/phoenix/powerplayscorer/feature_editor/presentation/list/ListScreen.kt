@@ -81,9 +81,6 @@ fun ListScreen(
         }
     ) { paddingValues ->
         LazyColumn(modifier = Modifier.padding(paddingValues)) {
-            item {
-                Spacer(modifier = Modifier.height(4.dp))
-            }
             itemsIndexed(
                 items = state.value.list,
                 key = { _, item ->
@@ -122,7 +119,12 @@ fun ListScreen(
                         },
                         modifier = Modifier
                             .animateItemPlacement()
-                            .padding(vertical = 4.dp, horizontal = 8.dp),
+                            .padding(
+                                top = if (index == 0) 8.dp else 4.dp,
+                                bottom = if (index == state.value.list.lastIndex) 8.dp else 4.dp,
+                                start = 8.dp,
+                                end = 8.dp
+                            ),
                     )
                     Box(
                         modifier = Modifier
@@ -135,9 +137,6 @@ fun ListScreen(
                     ) {}
                 }
 
-            }
-            item {
-                Spacer(modifier = Modifier.height(4.dp))
             }
         }
     }
