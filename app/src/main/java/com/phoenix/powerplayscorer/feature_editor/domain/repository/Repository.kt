@@ -9,7 +9,15 @@ interface Repository {
 
     fun getMatchByKey(key: String): Flow<Match?>
 
+    suspend fun getMatchesByKeyList(keyList: List<String>): List<Match>
+
+    suspend fun insertMatches(matchList: List<Match>)
+
     suspend fun insertMatch(match: Match)
 
     suspend fun deleteMatch(match: Match)
+
+    suspend fun deleteMatchByKey(key: String)
+
+    suspend fun deleteMatchesByKeyList(keyList: List<String>)
 }

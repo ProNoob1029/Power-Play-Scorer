@@ -12,9 +12,21 @@ interface MatchDao {
     @Query("SELECT * FROM `match` WHERE `key` = :key")
     fun getMatchByKey(key: String): Flow<Match?>
 
+    @Query("SELECT * FROM `match` WHERE `key` IN (:keyList)")
+    suspend fun getMatchesByKeyList(keyList: List<String>): List<Match>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertMatch(match: Match)
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertMatches(matchList: List<Match>)
+
     @Delete
     suspend fun deleteMatch(match: Match)
+
+    @Query("DELETE FROM `match` WHERE `key` = :key")
+    suspend fun deleteMatchByKey(key: String)
+
+    @Query("DELETE FROM `match` WHERE `key`IN (:keyList)")
+    suspend fun deleteMatchListByKeys(keyList: List<String>)
 }

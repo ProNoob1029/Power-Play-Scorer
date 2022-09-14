@@ -20,7 +20,23 @@ class RepositoryImpl (
         return dao.insertMatch(match)
     }
 
+    override suspend fun insertMatches(matchList: List<Match>) {
+        return dao.insertMatches(matchList)
+    }
+
     override suspend fun deleteMatch(match: Match) {
         return dao.deleteMatch(match)
+    }
+
+    override suspend fun deleteMatchByKey(key: String) {
+        return dao.deleteMatchByKey(key)
+    }
+
+    override suspend fun deleteMatchesByKeyList(keyList: List<String>) {
+        return dao.deleteMatchListByKeys(keyList)
+    }
+
+    override suspend fun getMatchesByKeyList(keyList: List<String>): List<Match> {
+        return dao.getMatchesByKeyList(keyList)
     }
 }

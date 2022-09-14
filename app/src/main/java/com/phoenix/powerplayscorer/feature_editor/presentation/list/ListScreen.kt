@@ -9,11 +9,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -21,11 +17,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.phoenix.powerplayscorer.R
 import com.phoenix.powerplayscorer.feature_editor.domain.util.Order
 import com.phoenix.powerplayscorer.feature_editor.domain.util.OrderType
 import com.phoenix.powerplayscorer.feature_editor.presentation.Screen
 import com.phoenix.powerplayscorer.feature_editor.presentation.list.components.ItemCard
-import com.phoenix.powerplayscorer.R
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
@@ -35,16 +32,35 @@ fun ListScreen(
 ) {
     val state = viewModel.state.collectAsState()
     val selected by remember { derivedStateOf { state.value.selectedItems.isEmpty().not() } }
+    val scope = rememberCoroutineScope()
 
     BackHandler(enabled = selected) {
         viewModel.clearSelectedItems()
     }
+    val snackbarHostState = remember { SnackbarHostState() }
 
     Scaffold(
+        snackbarHost = {
+            SnackbarHost(hostState = snackbarHostState)
+        },
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-                    navController.navigate(Screen.EditorScreen.route)
+                    if (selected) {
+                        scope.launch {
+                            viewModel.deleteSelectedMatches()
+                            val result = snackbarHostState.showSnackbar(
+                                message = "Items deleted",
+                                actionLabel = "Undo",
+                                duration = SnackbarDuration.Long
+                            )
+                            if (result == SnackbarResult.ActionPerformed) {
+                                viewModel.restoreMatches()
+                            }
+                        }
+                    } else {
+                        navController.navigate(Screen.EditorScreen.route)
+                    }
                 },
                 containerColor = MaterialTheme.colorScheme.primary,
             ) {
