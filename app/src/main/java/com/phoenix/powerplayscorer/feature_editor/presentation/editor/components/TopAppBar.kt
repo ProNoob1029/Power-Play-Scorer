@@ -20,7 +20,8 @@ fun TopAppBar(
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
     onReset: () -> Unit,
-    editEnabled: Boolean
+    editEnabled: Boolean,
+    isNewMatch: Boolean
 ) {
     val view = LocalView.current
     val iconColors = IconButtonDefaults.iconButtonColors(
@@ -32,7 +33,9 @@ fun TopAppBar(
         modifier = modifier,
         title = {
             Text(
-                text = "New Match",
+                text = if (editEnabled) {
+                    if (isNewMatch) "New Match" else "Edit Match"
+                } else "View Match",
                 style = MaterialTheme.typography.headlineMedium
             )
         },

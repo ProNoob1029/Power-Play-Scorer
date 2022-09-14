@@ -1,17 +1,22 @@
 package com.phoenix.powerplayscorer.feature_editor.presentation.list
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -29,6 +34,11 @@ fun ListScreen(
     navController: NavController
 ) {
     val state = viewModel.state.collectAsState()
+    val selected by remember { derivedStateOf { state.value.selectedItems.isEmpty().not() } }
+
+    BackHandler(enabled = selected) {
+        viewModel.clearSelectedItems()
+    }
 
     Scaffold(
         floatingActionButton = {
@@ -38,7 +48,19 @@ fun ListScreen(
                 },
                 containerColor = MaterialTheme.colorScheme.primary,
             ) {
-                Icon(imageVector = Icons.Default.Add, contentDescription = stringResource(id = R.string.create_match))
+                if (selected) {
+                    Icon(
+                        modifier = Modifier.size(32.dp),
+                        painter = painterResource(id = R.drawable.remove),
+                        contentDescription = stringResource(id = R.string.create_match)
+                    )
+                } else {
+                    Icon(
+                        modifier = Modifier.size(32.dp),
+                        imageVector = Icons.Default.Add,
+                        contentDescription = stringResource(id = R.string.create_match)
+                    )
+                }
             }
         }
     ) { paddingValues ->
@@ -69,17 +91,35 @@ fun ListScreen(
                     }
                 }
             ) { index, item ->
-                ItemCard(
-                    item = item,
-                    index = index,
-                    onClick = {
-                        navController.navigate(Screen.EditorScreen.withArgs(item.key))
-                    },
-                    onHold = {},
-                    modifier = Modifier
-                        .animateItemPlacement()
-                        .padding(vertical = 4.dp, horizontal = 8.dp),
-                )
+                val itemSelected by remember { derivedStateOf { state.value.selectedItems.contains(item.key) } }
+                Box {
+                    ItemCard(
+                        item = item,
+                        index = index,
+                        selected = false,
+                        onClick = {
+                            if (selected) {
+                                viewModel.selectItem(item.key)
+                            } else navController.navigate(Screen.EditorScreen.withArgs(item.key))
+                        },
+                        onHold = {
+                            viewModel.selectItem(item.key)
+                        },
+                        modifier = Modifier
+                            .animateItemPlacement()
+                            .padding(vertical = 4.dp, horizontal = 8.dp),
+                    )
+                    Box(
+                        modifier = Modifier
+                            .matchParentSize()
+                            .background(
+                                color = if (itemSelected)
+                                    MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
+                                else Color.Transparent
+                            )
+                    ) {}
+                }
+
             }
             item {
                 Spacer(modifier = Modifier.height(4.dp))

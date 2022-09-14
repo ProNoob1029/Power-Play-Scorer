@@ -24,6 +24,24 @@ class ListViewModel @Inject constructor(
         getList()
     }
 
+    fun selectItem(id: String) {
+        _state.update {
+            it.copy(
+                selectedItems = if (it.selectedItems.contains(id))
+                    it.selectedItems - id
+                else it.selectedItems + id
+            )
+        }
+    }
+
+    fun clearSelectedItems() {
+        _state.update {
+            it.copy(
+                selectedItems = emptyList()
+            )
+        }
+    }
+
     private fun getList(newOrder: Order = Order.Date(OrderType.Descending)) {
         job?.cancel()
         job = matchUseCases.getMatches(order = newOrder)

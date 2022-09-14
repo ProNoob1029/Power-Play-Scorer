@@ -8,6 +8,7 @@ import com.phoenix.powerplayscorer.feature_editor.domain.repository.Repository
 import com.phoenix.powerplayscorer.feature_editor.domain.use_case.GetMatch
 import com.phoenix.powerplayscorer.feature_editor.domain.use_case.GetMatches
 import com.phoenix.powerplayscorer.feature_editor.domain.use_case.MatchUseCases
+import com.phoenix.powerplayscorer.feature_editor.domain.use_case.SaveMatch
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -39,7 +40,8 @@ object AppModule {
     fun provideMatchUseCases(repository: Repository): MatchUseCases {
         return MatchUseCases(
             getMatches = GetMatches(repository),
-            getMatch = GetMatch(repository)
+            getMatch = GetMatch(repository),
+            saveMatch = SaveMatch(repository)
         )
     }
 }

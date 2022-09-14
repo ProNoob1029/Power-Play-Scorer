@@ -1,6 +1,8 @@
 package com.phoenix.powerplayscorer.feature_editor.presentation.list.components
 
+import android.text.format.DateFormat
 import android.view.HapticFeedbackConstants
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Column
@@ -11,6 +13,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -20,6 +23,13 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.phoenix.powerplayscorer.feature_editor.domain.model.Match
+import java.util.*
+
+fun getDate(timestamp: Long): String {
+    val calendar = Calendar.getInstance(Locale.ENGLISH)
+    calendar.timeInMillis = timestamp
+    return DateFormat.format("hh:mm d MMM y", calendar).toString()
+}
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -27,9 +37,11 @@ fun ItemCard(
     modifier: Modifier = Modifier,
     item: Match,
     index: Int,
+    selected: Boolean,
     onClick: () -> Unit,
     onHold: () -> Unit,
     containerColor: Color = MaterialTheme.colorScheme.secondaryContainer,
+    selectedColor: Color = MaterialTheme.colorScheme.primaryContainer,
     titleStyle: TextStyle = MaterialTheme.typography.titleLarge,
     infoStyle: TextStyle = MaterialTheme.typography.titleSmall
 ) {
@@ -37,7 +49,11 @@ fun ItemCard(
 
     val newIndex = index + 1
     val points = item.totalPoints
-    val timeStamp = item.createStamp
+    val date = getDate(item.createStamp)
+
+    val color by animateColorAsState(
+        targetValue = if (selected) selectedColor else containerColor
+    )
     
     Surface(
         modifier = modifier
@@ -53,7 +69,7 @@ fun ItemCard(
                     onHold()
                 },
             ),
-        color = containerColor,
+        color = color,
         shape = MaterialTheme.shapes.large,
     ) {
         Row(
@@ -77,7 +93,7 @@ fun ItemCard(
                 horizontalAlignment = Alignment.End
             ){
                 Text(
-                    text = "$timeStamp",
+                    text = date,
                     style = infoStyle
                 )
                 Text(

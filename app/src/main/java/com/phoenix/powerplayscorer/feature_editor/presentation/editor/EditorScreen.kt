@@ -9,6 +9,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.phoenix.powerplayscorer.feature_editor.domain.model.Match
@@ -16,6 +17,7 @@ import com.phoenix.powerplayscorer.feature_editor.presentation.editor.components
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlin.math.min
+import com.phoenix.powerplayscorer.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -25,6 +27,7 @@ fun EditorScreen(
 ) {
     val state = viewModel.state.collectAsState()
     val editEnabled = viewModel.isEditEnabled.collectAsState()
+    val isNewMatch by viewModel.isNewMatch.collectAsState()
     val screenList = remember {
         screenList(
             state = state,
@@ -37,17 +40,25 @@ fun EditorScreen(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-                    viewModel.isEditEnabled.update { !it }
+                    viewModel.isNewMatch.update { false }
+                    if (editEnabled.value) {
+                        viewModel.save()
+                    } else {
+                        viewModel.edit()
+                    }
                 },
                 containerColor = MaterialTheme.colorScheme.primary
             ) {
-                Icon(Icons.Default.Edit, "Edit")
+                if (editEnabled.value)
+                    Icon(painterResource(id = R.drawable.done), "Done")
+                else Icon(Icons.Default.Edit, "Edit")
             }
         },
         topBar = {
             TopAppBar(
                 checked = twoTeams,
                 editEnabled = editEnabled.value,
+                isNewMatch = isNewMatch,
                 onCheckedChange = { newChecked ->
                     viewModel.state.update { match ->
                         match.copy(
@@ -579,12 +590,12 @@ fun screenList(
     )
 }
 
-private operator fun Boolean.plus(other: Int) = if (this) other + 1 else other
-private operator fun Boolean.times(other: Int) = if (this) other else 0
-private operator fun Int.times(other: Boolean) = if (other) this else 0
+operator fun Boolean.plus(other: Int) = if (this) other + 1 else other
+operator fun Boolean.times(other: Int) = if (this) other else 0
+operator fun Int.times(other: Boolean) = if (other) this else 0
 
 private operator fun Boolean?.plus(other: Int) = if (this == null) 0 else this + 1 + other
-private operator fun Boolean?.times(other: Int) = if (this == null) 0 else (this + 1) * other
+operator fun Boolean?.times(other: Int) = if (this == null) 0 else (this + 1) * other
 private operator fun Int.times(other: Boolean?) = if (other == null) 0 else (other + 1) * this
 
 private fun Boolean?.toInt(): Int = when (this) {
