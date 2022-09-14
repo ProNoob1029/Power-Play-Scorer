@@ -2,7 +2,6 @@ package com.phoenix.powerplayscorer.feature_editor.presentation.list.components
 
 import android.text.format.DateFormat
 import android.view.HapticFeedbackConstants
-import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Column
@@ -13,7 +12,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -37,11 +35,9 @@ fun ItemCard(
     modifier: Modifier = Modifier,
     item: Match,
     index: Int,
-    selected: Boolean,
     onClick: () -> Unit,
     onHold: () -> Unit,
     containerColor: Color = MaterialTheme.colorScheme.secondaryContainer,
-    selectedColor: Color = MaterialTheme.colorScheme.primaryContainer,
     titleStyle: TextStyle = MaterialTheme.typography.titleLarge,
     infoStyle: TextStyle = MaterialTheme.typography.titleSmall
 ) {
@@ -50,10 +46,6 @@ fun ItemCard(
     val newIndex = index + 1
     val points = item.totalPoints
     val date = getDate(item.createStamp)
-
-    val color by animateColorAsState(
-        targetValue = if (selected) selectedColor else containerColor
-    )
     
     Surface(
         modifier = modifier
@@ -69,7 +61,7 @@ fun ItemCard(
                     onHold()
                 },
             ),
-        color = color,
+        color = containerColor,
         shape = MaterialTheme.shapes.large,
     ) {
         Row(

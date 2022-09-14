@@ -96,7 +96,6 @@ fun ListScreen(
                     ItemCard(
                         item = item,
                         index = index,
-                        selected = false,
                         onClick = {
                             if (selected) {
                                 viewModel.selectItem(item.key)
@@ -114,7 +113,7 @@ fun ListScreen(
                             .matchParentSize()
                             .background(
                                 color = if (itemSelected)
-                                    MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
+                                    MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)
                                 else Color.Transparent
                             )
                     ) {}
