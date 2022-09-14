@@ -24,7 +24,7 @@ import com.phoenix.powerplayscorer.feature_editor.domain.model.Match
 import java.util.*
 
 fun getDate(timestamp: Long): String {
-    val calendar = Calendar.getInstance(Locale.ENGLISH)
+    val calendar = Calendar.getInstance(Locale.getDefault())
     calendar.timeInMillis = timestamp
     return DateFormat.format("hh:mm d MMM y", calendar).toString()
 }
