@@ -26,7 +26,7 @@ import java.util.*
 private fun getDate(timestamp: Long): String {
     val calendar = Calendar.getInstance(Locale.getDefault())
     calendar.timeInMillis = timestamp
-    return DateFormat.format("kk:mm d MMM y", calendar).toString()
+    return DateFormat.format("HH:mm d MMM y", calendar).toString()
 }
 
 @OptIn(ExperimentalFoundationApi::class)
