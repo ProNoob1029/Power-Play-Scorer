@@ -9,11 +9,11 @@ class RepositoryImpl (
     private val dao: MatchDao
 ): Repository {
     override fun getMatches(): Flow<List<Match>> {
-        return dao.getMatches()
+        return dao.getMatches("offline")
     }
 
     override fun getMatchByKey(key: String): Flow<Match?> {
-        return dao.getMatchByKey(key)
+        return dao.getMatchByKey(key, "offline")
     }
 
     override suspend fun insertMatch(match: Match) {
@@ -37,6 +37,6 @@ class RepositoryImpl (
     }
 
     override suspend fun getMatchesByKeyList(keyList: List<String>): List<Match> {
-        return dao.getMatchesByKeyList(keyList)
+        return dao.getMatchesByKeyList(keyList, "offline")
     }
 }

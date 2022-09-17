@@ -10,6 +10,7 @@ import com.phoenix.powerplayscorer.feature_editor.domain.util.autoId
 data class Match(
     @PrimaryKey val key: String = autoId(),
 
+    val userId: String = "offline",
     val title: String = "",
     val createStamp: Long = 0,
     val editStamp: Long = 0,

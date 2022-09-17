@@ -6,28 +6,35 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.google.firebase.auth.FirebaseUser
+import com.phoenix.powerplayscorer.feature_editor.presentation.auth.AuthScreen
 import com.phoenix.powerplayscorer.feature_editor.presentation.editor.EditorScreen
 import com.phoenix.powerplayscorer.feature_editor.presentation.list.ListScreen
 
 @Composable
-fun Navigation() {
-    val navController = rememberNavController()
+fun Navigation(currentUser: FirebaseUser?) {
 
-    NavHost(navController = navController, startDestination = Screen.ListScreen.route) {
-        composable(route = Screen.ListScreen.route) {
-            ListScreen(navController = navController)
-        }
-        composable(
-            route = Screen.EditorScreen.route + "?key={key}",
-            arguments = listOf(
-                navArgument(name = "key") {
-                    type = NavType.StringType
-                    defaultValue = null
-                    nullable = true
-                }
-            )
-        ) {
-            EditorScreen()
+    if (currentUser == null) {
+        AuthScreen()
+    } else {
+        val navController = rememberNavController()
+
+        NavHost(navController = navController, startDestination = Screen.ListScreen.route) {
+            composable(route = Screen.ListScreen.route) {
+                ListScreen(navController = navController)
+            }
+            composable(
+                route = Screen.EditorScreen.route + "?key={key}",
+                arguments = listOf(
+                    navArgument(name = "key") {
+                        type = NavType.StringType
+                        defaultValue = null
+                        nullable = true
+                    }
+                )
+            ) {
+                EditorScreen()
+            }
         }
     }
 }
