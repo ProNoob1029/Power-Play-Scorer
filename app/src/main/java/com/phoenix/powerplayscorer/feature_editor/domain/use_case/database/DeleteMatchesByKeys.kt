@@ -1,4 +1,4 @@
-package com.phoenix.powerplayscorer.feature_editor.domain.use_case
+package com.phoenix.powerplayscorer.feature_editor.domain.use_case.database
 
 import com.phoenix.powerplayscorer.feature_editor.domain.repository.Repository
 

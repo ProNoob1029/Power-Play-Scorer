@@ -3,24 +3,27 @@ package com.phoenix.powerplayscorer.feature_editor.presentation
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.ktx.Firebase
+import com.phoenix.powerplayscorer.feature_editor.domain.use_case.auth.AuthUseCases
 import com.phoenix.powerplayscorer.ui.theme.PowerPlayScorerTheme
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
+    @Inject
+    lateinit var authUseCases: AuthUseCases
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             PowerPlayScorerTheme(
                 dynamicColor = true
             ) {
-                val currentUser by remember { derivedStateOf { Firebase.auth.currentUser } }
-                Navigation(currentUser)
+                val start = if (authUseCases.isUserSignedIn())
+                    "editor"
+                else "login"
+                Navigation(start)
             }
         }
     }

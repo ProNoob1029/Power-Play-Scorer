@@ -3,17 +3,19 @@ package com.phoenix.powerplayscorer.feature_editor.data.repository
 import com.phoenix.powerplayscorer.feature_editor.data.data_source.MatchDao
 import com.phoenix.powerplayscorer.feature_editor.domain.model.Match
 import com.phoenix.powerplayscorer.feature_editor.domain.repository.Repository
+import com.phoenix.powerplayscorer.feature_editor.domain.use_case.auth.AuthUseCases
 import kotlinx.coroutines.flow.Flow
 
 class RepositoryImpl (
-    private val dao: MatchDao
+    private val dao: MatchDao,
+    private val authUseCases: AuthUseCases
 ): Repository {
     override fun getMatches(): Flow<List<Match>> {
-        return dao.getMatches("offline")
+        return dao.getMatches(authUseCases.getUserId())
     }
 
     override fun getMatchByKey(key: String): Flow<Match?> {
-        return dao.getMatchByKey(key, "offline")
+        return dao.getMatchByKey(key, authUseCases.getUserId())
     }
 
     override suspend fun insertMatch(match: Match) {

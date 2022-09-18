@@ -1,14 +1,20 @@
 package com.phoenix.powerplayscorer.di
 
-import android.app.Application
+import android.content.Context
 import androidx.room.Room
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import com.phoenix.powerplayscorer.feature_editor.data.data_source.MatchDatabase
+import com.phoenix.powerplayscorer.feature_editor.data.repository.AuthRepositoryImpl
 import com.phoenix.powerplayscorer.feature_editor.data.repository.RepositoryImpl
+import com.phoenix.powerplayscorer.feature_editor.domain.repository.AuthRepository
 import com.phoenix.powerplayscorer.feature_editor.domain.repository.Repository
-import com.phoenix.powerplayscorer.feature_editor.domain.use_case.*
+import com.phoenix.powerplayscorer.feature_editor.domain.use_case.auth.*
+import com.phoenix.powerplayscorer.feature_editor.domain.use_case.database.*
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
@@ -18,9 +24,11 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideRoomDatabase(app: Application): MatchDatabase {
+    fun provideRoomDatabase(
+        @ApplicationContext appContext: Context
+    ): MatchDatabase {
         return Room.databaseBuilder(
-            app,
+            appContext,
             MatchDatabase::class.java,
             MatchDatabase.DATABASE_NAME
         ).build()
@@ -28,8 +36,14 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideRepository(db: MatchDatabase): Repository {
-        return RepositoryImpl(db.matchDao)
+    fun provideRepository(
+        db: MatchDatabase,
+        authUseCases: AuthUseCases
+    ): Repository {
+        return RepositoryImpl(
+            db.matchDao,
+            authUseCases
+        )
     }
 
     @Provides
@@ -42,6 +56,30 @@ object AppModule {
             getMatchesByKeys = GetMatchesByKeys(repository),
             deleteMatchesByKeys = DeleteMatchesByKeys(repository),
             saveMatches = SaveMatches(repository)
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideAuthUseCases(repo: AuthRepository): AuthUseCases {
+        return AuthUseCases(
+            isUserSignedIn = IsUserSignedIn(repo),
+            loginOnline = LoginOnline(repo),
+            register = Register(repo),
+            getUserId = GetUserId(repo),
+            signInOffline = SignInOffline(repo),
+            signOut = SignOut(repo)
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideAuthRepository(
+        @ApplicationContext appContext: Context
+    ): AuthRepository {
+        return AuthRepositoryImpl(
+            auth = Firebase.auth,
+            appContext = appContext
         )
     }
 }

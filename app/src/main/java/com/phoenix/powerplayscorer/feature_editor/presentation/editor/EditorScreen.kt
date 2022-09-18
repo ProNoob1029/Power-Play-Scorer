@@ -22,13 +22,12 @@ import com.phoenix.powerplayscorer.R
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditorScreen(
-    //navController: NavController = rememberNavController(),
     viewModel: EditorViewModel = hiltViewModel()
 ) {
     val state = viewModel.state.collectAsState()
     val editEnabled = viewModel.isEditEnabled.collectAsState()
     val isNewMatch by viewModel.isNewMatch.collectAsState()
-    val screenList = remember {
+    val screenList: List<@Composable (Modifier) -> Unit> = remember {
         screenList(
             state = state,
             mutableState = viewModel.state,

@@ -3,11 +3,14 @@ package com.phoenix.powerplayscorer.feature_editor.presentation.list
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -16,7 +19,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
 import com.phoenix.powerplayscorer.R
 import com.phoenix.powerplayscorer.feature_editor.domain.util.Order
 import com.phoenix.powerplayscorer.feature_editor.domain.util.OrderType
@@ -28,38 +30,61 @@ import kotlinx.coroutines.launch
 @Composable
 fun ListScreen(
     viewModel: ListViewModel = hiltViewModel(),
-    navController: NavController
+    navigate: (path: String) -> Unit,
 ) {
     val state = viewModel.state.collectAsState()
     val selected by remember { derivedStateOf { state.value.selectedItems.isEmpty().not() } }
     val scope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
 
     BackHandler(enabled = selected) {
         viewModel.clearSelectedItems()
     }
-    val snackbarHostState = remember { SnackbarHostState() }
 
     Scaffold(
         snackbarHost = {
             SnackbarHost(hostState = snackbarHostState)
         },
+        topBar = {
+             TopAppBar(
+                 title = {
+                     Text(
+                         text = "Matches",
+                         style = MaterialTheme.typography.headlineMedium
+                     )
+                 },
+                 actions = {
+                     IconButton(
+                         onClick = {
+                             navigate(Screen.SettingsScreen.route)
+                         }
+                     ) {
+                         Icon(imageVector = Icons.Default.Settings, contentDescription = "Settings")
+                     }
+                 },
+                 colors = TopAppBarDefaults.smallTopAppBarColors(
+                     containerColor = MaterialTheme.colorScheme.primaryContainer
+                 )
+             )
+        },
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
                     if (selected) {
-                        scope.launch {
-                            viewModel.deleteSelectedMatches()
-                            val result = snackbarHostState.showSnackbar(
-                                message = "Items deleted",
-                                actionLabel = "Undo",
-                                duration = SnackbarDuration.Long
-                            )
-                            if (result == SnackbarResult.ActionPerformed) {
-                                viewModel.restoreMatches()
+                        viewModel.deleteSelectedMatches {
+                            scope.launch {
+                                val result = snackbarHostState.showSnackbar(
+                                    message = "Items deleted",
+                                    actionLabel = "Undo",
+                                    duration = SnackbarDuration.Long
+                                )
+                                if (result == SnackbarResult.ActionPerformed) {
+                                    viewModel.restoreMatches()
+                                }
                             }
                         }
                     } else {
-                        navController.navigate(Screen.EditorScreen.route)
+                        navigate(Screen.EditorScreen.route)
                     }
                 },
                 containerColor = MaterialTheme.colorScheme.primary,
@@ -112,7 +137,7 @@ fun ListScreen(
                         onClick = {
                             if (selected) {
                                 viewModel.selectItem(item.key)
-                            } else navController.navigate(Screen.EditorScreen.withArgs(item.key))
+                            } else navigate(Screen.EditorScreen.withArgs(item.key))
                         },
                         onHold = {
                             viewModel.selectItem(item.key)

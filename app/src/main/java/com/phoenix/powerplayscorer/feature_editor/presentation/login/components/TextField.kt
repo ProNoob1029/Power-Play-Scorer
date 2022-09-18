@@ -1,4 +1,4 @@
-package com.phoenix.powerplayscorer.feature_editor.presentation.auth.components
+package com.phoenix.powerplayscorer.feature_editor.presentation.login.components
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardActions

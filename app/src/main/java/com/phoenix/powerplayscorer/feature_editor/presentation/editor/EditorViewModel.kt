@@ -4,7 +4,8 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.phoenix.powerplayscorer.feature_editor.domain.model.Match
-import com.phoenix.powerplayscorer.feature_editor.domain.use_case.MatchUseCases
+import com.phoenix.powerplayscorer.feature_editor.domain.use_case.auth.AuthUseCases
+import com.phoenix.powerplayscorer.feature_editor.domain.use_case.database.MatchUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.*
@@ -14,7 +15,8 @@ import javax.inject.Inject
 @HiltViewModel
 class EditorViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val matchUseCases: MatchUseCases
+    private val matchUseCases: MatchUseCases,
+    private val authUseCases: AuthUseCases
 ): ViewModel() {
     private var currentKey: String? = savedStateHandle.get<String>("key")
 
@@ -34,6 +36,7 @@ class EditorViewModel @Inject constructor(
             state.value.let { match ->
                 matchUseCases.saveMatch(
                     match.copy(
+                        userId = authUseCases.getUserId(),
                         createStamp = if (currentKey == null)
                             System.currentTimeMillis()
                         else match.createStamp,

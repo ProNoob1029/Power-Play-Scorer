@@ -1,4 +1,4 @@
-package com.phoenix.powerplayscorer.feature_editor.domain.use_case
+package com.phoenix.powerplayscorer.feature_editor.domain.use_case.database
 
 data class MatchUseCases(
     val getMatches: GetMatches,

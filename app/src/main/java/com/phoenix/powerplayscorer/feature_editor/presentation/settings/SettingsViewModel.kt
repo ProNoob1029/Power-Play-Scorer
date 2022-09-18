@@ -1,4 +1,4 @@
-package com.phoenix.powerplayscorer.feature_editor.presentation.auth
+package com.phoenix.powerplayscorer.feature_editor.presentation.settings
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -9,13 +9,10 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class AuthViewModel @Inject constructor(
+class SettingsViewModel @Inject constructor(
     private val authUseCases: AuthUseCases
 ): ViewModel() {
-
-    fun isUserLoggedIn(): Boolean = authUseCases.isUserSignedIn()
-
-    fun singInOffline(
+    fun signOut(
         onSuccess: () -> Unit,
         onFailure: (String?) -> Unit
     ) {
