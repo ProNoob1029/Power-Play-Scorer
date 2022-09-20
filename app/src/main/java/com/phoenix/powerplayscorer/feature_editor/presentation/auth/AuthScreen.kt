@@ -66,15 +66,15 @@ fun AuthScreen(
                         vertical = 10.dp
                     ),
                     onClick = {
-                        viewModel.singInOffline(
+                        /*viewModel.singInOffline(
                             onSuccess = {
                                 navigateToEditor()
                             },
                             onFailure = {
 
                             }
-                        )
-
+                        )*/
+                        navigateToEditor()
                     }
                 ) {
                     Text(

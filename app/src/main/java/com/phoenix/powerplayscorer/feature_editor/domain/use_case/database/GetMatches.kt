@@ -9,15 +9,13 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.mapLatest
 
 class GetMatches(
-    repository: Repository
+    private val repository: Repository
 ) {
-    private val list = repository.getMatches()
-
     @OptIn(ExperimentalCoroutinesApi::class)
     operator fun invoke(
         order: Order = Order.Date(OrderType.Descending),
     ): Flow<List<Match>> {
-        return list.mapLatest { list ->
+        return repository.getMatches().mapLatest { list ->
             when(order.orderType) {
                 is OrderType.Ascending -> {
                     when(order) {

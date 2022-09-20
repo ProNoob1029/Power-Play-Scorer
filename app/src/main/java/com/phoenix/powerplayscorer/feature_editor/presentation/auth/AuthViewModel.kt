@@ -1,11 +1,8 @@
 package com.phoenix.powerplayscorer.feature_editor.presentation.auth
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.phoenix.powerplayscorer.feature_editor.domain.model.Response
 import com.phoenix.powerplayscorer.feature_editor.domain.use_case.auth.AuthUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -15,7 +12,7 @@ class AuthViewModel @Inject constructor(
 
     fun isUserLoggedIn(): Boolean = authUseCases.isUserSignedIn()
 
-    fun singInOffline(
+    /*fun singInOffline(
         onSuccess: () -> Unit,
         onFailure: (String?) -> Unit
     ) {
@@ -34,5 +31,5 @@ class AuthViewModel @Inject constructor(
                 }
             }
         }
-    }
+    }*/
 }
