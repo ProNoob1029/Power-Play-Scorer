@@ -1,5 +1,6 @@
 package com.phoenix.powerplayscorer.feature_editor.presentation.login
 
+import android.view.HapticFeedbackConstants
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -18,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -28,6 +30,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.phoenix.powerplayscorer.feature_editor.presentation.login.components.TextField
 import kotlinx.coroutines.flow.update
 import com.phoenix.powerplayscorer.R
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -41,6 +44,8 @@ fun LoginScreen(
     val focusManager = LocalFocusManager.current
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
+    val view = LocalView.current
+    var snackBarJob: Job? = null
 
     Scaffold(
         snackbarHost = {
@@ -150,12 +155,14 @@ fun LoginScreen(
                         vertical = 10.dp
                     ),
                     onClick = {
+                        view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
                         viewModel.login(
                             onSuccess = {
                                 navigateToEditor()
                             },
                             onFailure = { message ->
-                                scope.launch {
+                                snackBarJob?.cancel()
+                                snackBarJob = scope.launch {
                                     snackbarHostState.showSnackbar(
                                         message = message ?: "Login failed."
                                     )
@@ -172,7 +179,7 @@ fun LoginScreen(
                 if (state.value.isLoginLoading) {
                     LinearProgressIndicator(
                         modifier = Modifier
-                            .padding(top = 8.dp)
+                            .padding(top = 16.dp)
                             .fillMaxWidth()
                     )
                 }
@@ -203,16 +210,19 @@ fun LoginScreen(
                         vertical = 10.dp
                     ),
                     onClick = {
+                        view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
                         viewModel.register(
                             onSuccess = {
-                                scope.launch {
+                                snackBarJob?.cancel()
+                                snackBarJob = scope.launch {
                                     snackbarHostState.showSnackbar(
                                         message = "Register successful."
                                     )
                                 }
                             },
                             onFailure = { message ->
-                                scope.launch {
+                                snackBarJob?.cancel()
+                                snackBarJob = scope.launch {
                                     snackbarHostState.showSnackbar(
                                         message = message ?: "Register failed."
                                     )
@@ -229,7 +239,7 @@ fun LoginScreen(
                 if (state.value.isRegisterLoading) {
                     LinearProgressIndicator(
                         modifier = Modifier
-                            .padding(top = 8.dp)
+                            .padding(top = 16.dp)
                             .fillMaxWidth()
                     )
                 }

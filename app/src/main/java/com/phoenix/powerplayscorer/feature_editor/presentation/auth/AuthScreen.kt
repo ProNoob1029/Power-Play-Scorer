@@ -74,6 +74,7 @@ fun AuthScreen(
 
                             }
                         )*/
+                        view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
                         navigateToEditor()
                     }
                 ) {
