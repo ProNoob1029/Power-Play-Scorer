@@ -56,7 +56,14 @@ class EditorViewModel @Inject constructor(
     }
 
     fun reset() {
-        state.update { Match() }
+        state.update { oldMatch ->
+            Match(
+                userId = oldMatch.userId,
+                createStamp = oldMatch.createStamp,
+                editStamp = oldMatch.editStamp,
+                uploadStamp = oldMatch.uploadStamp,
+            )
+        }
     }
 
     private fun getMatch(key: String?) {

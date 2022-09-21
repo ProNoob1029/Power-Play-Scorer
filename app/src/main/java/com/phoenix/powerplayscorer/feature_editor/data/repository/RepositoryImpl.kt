@@ -15,7 +15,7 @@ class RepositoryImpl (
     }
 
     override fun getMatchByKey(key: String): Flow<Match?> {
-        return dao.getMatchByKey(key, authUseCases.getUserId())
+        return dao.getMatchByKey(key)
     }
 
     override suspend fun insertMatch(match: Match) {
@@ -39,6 +39,6 @@ class RepositoryImpl (
     }
 
     override suspend fun getMatchesByKeyList(keyList: List<String>): List<Match> {
-        return dao.getMatchesByKeyList(keyList, "offline")
+        return dao.getMatchesByKeyList(keyList)
     }
 }

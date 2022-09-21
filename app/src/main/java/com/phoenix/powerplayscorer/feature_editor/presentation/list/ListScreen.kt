@@ -1,11 +1,10 @@
 package com.phoenix.powerplayscorer.feature_editor.presentation.list
 
+import android.view.HapticFeedbackConstants
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
@@ -15,6 +14,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -36,6 +36,7 @@ fun ListScreen(
     val selected by remember { derivedStateOf { state.value.selectedItems.isEmpty().not() } }
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
+    val view = LocalView.current
 
     BackHandler(enabled = selected) {
         viewModel.clearSelectedItems()
@@ -56,10 +57,15 @@ fun ListScreen(
                  actions = {
                      IconButton(
                          onClick = {
+                             view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
                              navigate(Screen.SettingsScreen.route)
                          }
                      ) {
-                         Icon(imageVector = Icons.Default.Settings, contentDescription = "Settings")
+                         Icon(
+                             imageVector = Icons.Default.Settings, 
+                             contentDescription = "Settings",
+                             tint = contentColorFor(backgroundColor = MaterialTheme.colorScheme.primaryContainer)
+                         )
                      }
                  },
                  colors = TopAppBarDefaults.smallTopAppBarColors(
@@ -70,6 +76,7 @@ fun ListScreen(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
+                    view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
                     if (selected) {
                         viewModel.deleteSelectedMatches {
                             scope.launch {
@@ -146,7 +153,7 @@ fun ListScreen(
                             .animateItemPlacement()
                             .padding(
                                 top = if (index == 0) 8.dp else 4.dp,
-                                bottom = if (index == state.value.list.lastIndex) 8.dp else 4.dp,
+                                bottom = 4.dp,
                                 start = 8.dp,
                                 end = 8.dp
                             ),
@@ -162,6 +169,9 @@ fun ListScreen(
                     ) {}
                 }
 
+            }
+            item {
+                Spacer(modifier = Modifier.height(84.dp))
             }
         }
     }

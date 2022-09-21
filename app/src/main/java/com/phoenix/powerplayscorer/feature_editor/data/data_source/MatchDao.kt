@@ -9,11 +9,11 @@ interface MatchDao {
     @Query("SELECT * FROM `match` WHERE `userId` = :userId")
     fun getMatches(userId: String): Flow<List<Match>>
 
-    @Query("SELECT * FROM `match` WHERE `key` = :key AND `userId` = :userId")
-    fun getMatchByKey(key: String, userId: String): Flow<Match?>
+    @Query("SELECT * FROM `match` WHERE `key` = :key")
+    fun getMatchByKey(key: String): Flow<Match?>
 
-    @Query("SELECT * FROM `match` WHERE `key` IN (:keyList) AND `userId` = :userId")
-    suspend fun getMatchesByKeyList(keyList: List<String>, userId: String): List<Match>
+    @Query("SELECT * FROM `match` WHERE `key` IN (:keyList)")
+    suspend fun getMatchesByKeyList(keyList: List<String>): List<Match>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertMatch(match: Match)
