@@ -40,7 +40,6 @@ fun EditorScreen(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-                    viewModel.isNewMatch.update { false }
                     if (editEnabled.value) {
                         viewModel.save()
                     } else {
