@@ -1,9 +1,8 @@
 package com.phoenix.powerplayscorer.di
 
+import android.app.Application
 import android.content.Context
 import androidx.room.Room
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.ktx.Firebase
 import com.phoenix.powerplayscorer.feature_editor.data.data_source.MatchDatabase
 import com.phoenix.powerplayscorer.feature_editor.data.repository.AuthRepositoryImpl
 import com.phoenix.powerplayscorer.feature_editor.data.repository.RepositoryImpl
@@ -38,11 +37,11 @@ object AppModule {
     @Singleton
     fun provideRepository(
         db: MatchDatabase,
-        authUseCases: AuthUseCases
+        authUseCases: AuthUseCases,
     ): Repository {
         return RepositoryImpl(
             db.matchDao,
-            authUseCases
+            authUseCases,
         )
     }
 
@@ -68,18 +67,18 @@ object AppModule {
             register = Register(repo),
             getUserId = GetUserId(repo),
             signInOffline = SignInOffline(repo),
-            signOut = SignOut(repo)
+            signOut = SignOut(repo),
+            getUserIdFlow = GetUserIdFlow(repo)
         )
     }
 
     @Provides
     @Singleton
     fun provideAuthRepository(
-        @ApplicationContext appContext: Context
+        application: Application
     ): AuthRepository {
         return AuthRepositoryImpl(
-            auth = Firebase.auth,
-            appContext = appContext
+            application = application
         )
     }
 }

@@ -6,5 +6,6 @@ data class AuthUseCases(
     val register: Register,
     val getUserId: GetUserId,
     val signInOffline: SignInOffline,
-    val signOut: SignOut
+    val signOut: SignOut,
+    val getUserIdFlow: GetUserIdFlow
 )

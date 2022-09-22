@@ -29,4 +29,11 @@ interface MatchDao {
 
     @Query("DELETE FROM `match` WHERE `key`IN (:keyList)")
     suspend fun deleteMatchListByKeys(keyList: List<String>)
+
+    @Query("SELECT MAX(uploadStamp) AS newestUpload FROM `match` WHERE `userId` = :userId")
+    fun getLatestUploadStamp(userId: String): Flow<Long?>
+
+    @Query("SELECT * FROM `match` WHERE uploadStamp = null AND `userId` = :userId")
+    fun getMatchesNotUploaded(userId: String): Flow<List<Match>>
+
 }
