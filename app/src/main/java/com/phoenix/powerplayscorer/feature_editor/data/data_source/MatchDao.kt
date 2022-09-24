@@ -36,4 +36,7 @@ interface MatchDao {
     @Query("SELECT * FROM `match` WHERE uploadStamp = null AND `userId` = :userId")
     fun getMatchesNotUploaded(userId: String): Flow<List<Match>>
 
+    @Query("SELECT `key` FROM `Match` WHERE uploadStamp != null AND userId = :userId")
+    suspend fun getUploadedMatchesKeys(userId: String): List<String>
+
 }
