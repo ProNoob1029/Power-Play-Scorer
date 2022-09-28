@@ -3,6 +3,7 @@ package com.phoenix.powerplayscorer.feature_editor.domain.model
 import androidx.annotation.Keep
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.google.firebase.firestore.ServerTimestamp
 import com.phoenix.powerplayscorer.feature_editor.domain.util.autoId
 
 @Keep
@@ -14,6 +15,7 @@ data class Match(
     val title: String = "",
     val createStamp: Long = 0,
     val editStamp: Long = 0,
+    @ServerTimestamp
     val uploadStamp: Long? = null,
     val totalPoints: Int = 0,
     val twoTeams: Boolean = false,
