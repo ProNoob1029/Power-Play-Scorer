@@ -60,10 +60,10 @@ class RepositoryImpl (
                             onSnapshotFinished = { newMatches, deletedMatches ->
                                 launch {
                                     dao.insertMatches(newMatches)
-                                    val toBeDeleted = dao.getDeletedMatches(uid)
+                                    val uploadedKeys = dao.getUploadedMatchesKeys(uid)
                                     val willBeDeleted = mutableListOf<Match>()
                                     for (match in deletedMatches) {
-                                        if (toBeDeleted.contains(match))
+                                        if (uploadedKeys.contains(match.key))
                                             willBeDeleted.add(match)
                                     }
                                     dao.deleteMatches(willBeDeleted)
