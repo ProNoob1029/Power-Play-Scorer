@@ -1,6 +1,5 @@
 package com.phoenix.powerplayscorer.di
 
-import android.app.Application
 import android.content.Context
 import androidx.room.Room
 import com.phoenix.powerplayscorer.feature_editor.data.data_source.MatchDatabase
@@ -75,11 +74,7 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideAuthRepository(
-        application: Application
-    ): AuthRepository {
-        return AuthRepositoryImpl(
-            application = application
-        )
+    fun provideAuthRepository(): AuthRepository {
+        return AuthRepositoryImpl()
     }
 }

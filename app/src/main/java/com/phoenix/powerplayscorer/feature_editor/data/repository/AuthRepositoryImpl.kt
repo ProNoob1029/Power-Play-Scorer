@@ -1,20 +1,20 @@
 package com.phoenix.powerplayscorer.feature_editor.data.repository
 
-import android.app.Application
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.phoenix.powerplayscorer.feature_editor.data.data_source.User
 import com.phoenix.powerplayscorer.feature_editor.domain.model.Response
 import com.phoenix.powerplayscorer.feature_editor.domain.repository.AuthRepository
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.tasks.await
 
-class AuthRepositoryImpl(
-    private val application: Application
-): AuthRepository {
+class AuthRepositoryImpl: AuthRepository {
 
     private val currentAuth = MutableStateFlow(Firebase.auth)
     private val currentUser = MutableStateFlow(Firebase.auth.currentUser)
     private val currentUid = MutableStateFlow(Firebase.auth.currentUser?.uid)
+    private val db = Firebase.firestore
 
     init {
         Firebase.auth.addAuthStateListener {  newAuth ->
@@ -40,6 +40,16 @@ class AuthRepositoryImpl(
         try {
             emit(Response.Loading)
             currentAuth.value.createUserWithEmailAndPassword(email, password).await()
+            currentUid.transformWhile { _it ->
+                if (_it == null) {
+                    true
+                } else {
+                    emit(_it)
+                    false
+                }
+            }.collect {
+                db.collection("users").document(it).set(User()).await()
+            }
             emit(Response.Success(Unit))
         } catch(e: Exception) {
             emit(Response.Failure(e.message))
