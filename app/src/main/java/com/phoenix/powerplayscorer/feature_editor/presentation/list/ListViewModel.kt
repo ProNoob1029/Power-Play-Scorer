@@ -49,9 +49,12 @@ class ListViewModel @Inject constructor(
         onSuccess: () -> Unit
     ) {
         viewModelScope.launch {
-            state.value.selectedItems.let { selectedItems: List<String> ->
-                recentlyDeletedMatches = matchUseCases.getMatchesByKeys(selectedItems)
-                matchUseCases.deleteMatchesByKeys(selectedItems)
+            state.value.let { listState ->
+                val deletedMatches = listState.list.filter {
+                    listState.selectedItems.contains(it.key)
+                }
+                recentlyDeletedMatches = deletedMatches
+                matchUseCases.deleteMatches(deletedMatches)
             }
             _state.update { it.copy(selectedItems = emptyList()) }
             onSuccess()
@@ -61,7 +64,13 @@ class ListViewModel @Inject constructor(
     fun restoreMatches() {
         viewModelScope.launch {
             recentlyDeletedMatches?.let {
-                matchUseCases.saveMatches(it)
+                matchUseCases.saveMatches(
+                    it.map { match ->
+                        match.copy(
+                            uploadStamp = null
+                        )
+                    }
+                )
             }
         }
     }

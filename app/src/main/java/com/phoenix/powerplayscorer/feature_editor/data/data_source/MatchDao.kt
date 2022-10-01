@@ -6,8 +6,14 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface MatchDao {
-    @Query("SELECT * FROM `match` WHERE `userId` = :userId AND uploadStamp != -1")
+    @Query("SELECT * FROM `match` WHERE `userId` = :userId AND (`uploadStamp` IS null OR `uploadStamp` != -1)")
     fun getMatches(userId: String): Flow<List<Match>>
+
+    @Query("SELECT * FROM `match` WHERE `userId` = :userId AND `uploadStamp` = -1")
+    fun getDeletedMatchesFlow(userId: String): Flow<List<Match>>
+
+    @Query("SELECT * FROM `match` WHERE `userId` = :userId AND `uploadStamp` = -1")
+    suspend fun getDeletedMatches(userId: String): List<Match>
 
     @Query("SELECT * FROM `match` WHERE `key` = :key")
     fun getMatchByKey(key: String): Flow<Match?>
@@ -33,13 +39,13 @@ interface MatchDao {
     @Query("DELETE FROM `match` WHERE `key`IN (:keyList)")
     suspend fun deleteMatchListByKeys(keyList: List<String>)
 
-    @Query("SELECT MAX(uploadStamp) AS newestUpload FROM `match` WHERE `userId` = :userId AND uploadStamp != -1")
+    @Query("SELECT MAX(uploadStamp) AS newestUpload FROM `match` WHERE `userId` = :userId AND (`uploadStamp` IS null OR `uploadStamp` != -1)")
     suspend fun getLatestUploadStamp(userId: String): Long?
 
-    @Query("SELECT * FROM `match` WHERE uploadStamp = null AND `userId` = :userId")
+    @Query("SELECT * FROM `match` WHERE uploadStamp IS null AND `userId` = :userId")
     fun getMatchesNotUploaded(userId: String): Flow<List<Match>>
 
-    @Query("SELECT `key` FROM `Match` WHERE uploadStamp != null AND uploadStamp != -1 AND userId = :userId")
+    @Query("SELECT `key` FROM `Match` WHERE NOT (`uploadStamp` IS null OR `uploadStamp` = -1) AND userId = :userId")
     suspend fun getUploadedMatchesKeys(userId: String): List<String>
 
 }

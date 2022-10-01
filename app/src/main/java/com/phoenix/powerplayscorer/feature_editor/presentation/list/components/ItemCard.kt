@@ -45,7 +45,7 @@ fun ItemCard(
 
     val newIndex = index + 1
     val points = item.totalPoints
-    val date = getDate(item.createStamp)
+    val date = getDate(item.uploadStamp ?: 0)
     
     Surface(
         modifier = modifier

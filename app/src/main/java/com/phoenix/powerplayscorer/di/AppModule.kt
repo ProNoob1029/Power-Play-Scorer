@@ -54,7 +54,8 @@ object AppModule {
             saveMatch = SaveMatch(repository),
             getMatchesByKeys = GetMatchesByKeys(repository),
             deleteMatchesByKeys = DeleteMatchesByKeys(repository),
-            saveMatches = SaveMatches(repository)
+            saveMatches = SaveMatches(repository),
+            deleteMatches = DeleteMatches(repository)
         )
     }
 
