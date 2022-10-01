@@ -98,7 +98,7 @@ class RepositoryImpl (
     private fun documentListener(latestStamp: Long?, id: String, onSnapshotFinished: (newMatches: List<Match>, deletedMatches: List<Match>) -> Unit): ListenerRegistration {
         val path = db.collection("users").document(id).collection("matches")
         Log.e(TAG, "Latest stamp: $latestStamp")
-        return path.whereGreaterThanOrEqualTo(
+        return path.whereGreaterThan(
             "uploadStamp",
             (latestStamp ?: 0).toTimestamp()
         ).addSnapshotListener { snapshot, error ->
@@ -107,9 +107,10 @@ class RepositoryImpl (
                 return@addSnapshotListener
             }
             if (snapshot == null) return@addSnapshotListener
+            if (snapshot.isEmpty) return@addSnapshotListener
             val newMatches = mutableListOf<Match>()
             val deletedMatches = mutableListOf<Match>()
-            Log.e(TAG, "Got new snapshot")
+            Log.e(TAG, "Got new snapshot with ${snapshot.documentChanges.size} changes")
             for (doc in snapshot.documentChanges) {
                 if (doc.document.metadata.hasPendingWrites().not()) {
                     when (doc.type) {
