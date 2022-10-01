@@ -1,6 +1,6 @@
 package com.phoenix.powerplayscorer.feature_editor.domain.model
 
-import com.google.errorprone.annotations.Keep
+import androidx.annotation.Keep
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.ServerTimestamp
 
