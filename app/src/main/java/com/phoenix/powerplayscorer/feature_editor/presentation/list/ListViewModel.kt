@@ -77,8 +77,8 @@ class ListViewModel @Inject constructor(
 
     private fun getList(newOrder: Order = Order.Date(OrderType.Descending)) {
         job?.cancel()
-        job = matchUseCases.getMatches(order = newOrder)
-            .onEach { newList ->
+        job = viewModelScope.launch {
+            matchUseCases.getMatches(order = newOrder).collectLatest {newList ->
                 _state.update {
                     it.copy(
                         list = newList,
@@ -86,6 +86,6 @@ class ListViewModel @Inject constructor(
                     )
                 }
             }
-            .launchIn(viewModelScope)
+        }
     }
 }

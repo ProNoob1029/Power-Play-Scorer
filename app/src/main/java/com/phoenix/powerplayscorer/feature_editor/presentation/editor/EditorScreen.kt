@@ -27,13 +27,12 @@ fun EditorScreen(
     val state = viewModel.state.collectAsState()
     val editEnabled = viewModel.isEditEnabled.collectAsState()
     val isNewMatch by viewModel.isNewMatch.collectAsState()
-    var screenList: List<@Composable (Modifier) -> Unit> = remember {
-        emptyList()
-        /*screenList(
+    val screenList = remember {
+        screenList(
             state = state,
             mutableState = viewModel.state,
             editEnabled = editEnabled
-        )*/
+        )
     }
     val twoTeams by remember { derivedStateOf { state.value.twoTeams } }
     Scaffold(
@@ -80,13 +79,6 @@ fun EditorScreen(
                 item(Modifier)
             }
         }
-    }
-    screenList = remember {
-        screenList(
-            state = state,
-            mutableState = viewModel.state,
-            editEnabled = editEnabled
-        )
     }
 }
 

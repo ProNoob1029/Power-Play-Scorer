@@ -1,14 +1,15 @@
 package com.phoenix.powerplayscorer.feature_editor.presentation
 
-import androidx.compose.animation.EnterTransition
-import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
-import com.google.accompanist.navigation.animation.*
+import com.google.accompanist.navigation.animation.AnimatedNavHost
+import com.google.accompanist.navigation.animation.composable
+import com.google.accompanist.navigation.animation.navigation
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.phoenix.powerplayscorer.feature_editor.presentation.auth.AuthScreen
 import com.phoenix.powerplayscorer.feature_editor.presentation.editor.EditorScreen
@@ -35,10 +36,14 @@ private fun NavGraphBuilder.editorGraph(navController: NavController) {
         composable(
             route = Screen.ListScreen.route,
             enterTransition = {
-                EnterTransition.None
+                when (initialState.destination.route) {
+                    Screen.LoginScreen.route -> slideIntoContainer(AnimatedContentScope.SlideDirection.Left)
+                    Screen.ChooseAccount.route -> slideIntoContainer(AnimatedContentScope.SlideDirection.Left)
+                    else -> slideIntoContainer(AnimatedContentScope.SlideDirection.Right)
+                }
             },
             exitTransition = {
-                ExitTransition.None
+                slideOutOfContainer(AnimatedContentScope.SlideDirection.Left)
             }
         ) {
             ListScreen(
@@ -57,10 +62,10 @@ private fun NavGraphBuilder.editorGraph(navController: NavController) {
                 }
             ),
             enterTransition = {
-                EnterTransition.None
+                slideIntoContainer(AnimatedContentScope.SlideDirection.Left)
             },
             exitTransition = {
-                ExitTransition.None
+                slideOutOfContainer(AnimatedContentScope.SlideDirection.Right)
             }
         ) {
             EditorScreen()
@@ -68,10 +73,10 @@ private fun NavGraphBuilder.editorGraph(navController: NavController) {
         composable(
             route = Screen.SettingsScreen.route,
             enterTransition = {
-                EnterTransition.None
+                slideIntoContainer(AnimatedContentScope.SlideDirection.Left)
             },
             exitTransition = {
-                ExitTransition.None
+                slideOutOfContainer(AnimatedContentScope.SlideDirection.Right)
             }
         ) {
             SettingsScreen(
@@ -81,7 +86,7 @@ private fun NavGraphBuilder.editorGraph(navController: NavController) {
                             inclusive = true
                         }
                     }
-                }
+                },
             )
         }
     }
@@ -93,10 +98,13 @@ private fun NavGraphBuilder.loginGraph(navController: NavController) {
         composable(
             route = Screen.LoginScreen.route,
             enterTransition = {
-                EnterTransition.None
+                slideIntoContainer(AnimatedContentScope.SlideDirection.Left)
             },
             exitTransition = {
-                ExitTransition.None
+                when (targetState.destination.route) {
+                    Screen.ListScreen.route -> slideOutOfContainer(AnimatedContentScope.SlideDirection.Left)
+                    else -> slideOutOfContainer(AnimatedContentScope.SlideDirection.Right)
+                }
             }
         ) {
             LoginScreen(
@@ -112,10 +120,10 @@ private fun NavGraphBuilder.loginGraph(navController: NavController) {
         composable(
             route = Screen.ChooseAccount.route,
             enterTransition = {
-                EnterTransition.None
+                slideIntoContainer(AnimatedContentScope.SlideDirection.Right)
             },
             exitTransition = {
-                ExitTransition.None
+                slideOutOfContainer(AnimatedContentScope.SlideDirection.Left)
             }
         ) {
             AuthScreen(

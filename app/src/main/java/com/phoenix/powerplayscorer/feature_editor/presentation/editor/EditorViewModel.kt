@@ -14,20 +14,39 @@ import javax.inject.Inject
 
 @HiltViewModel
 class EditorViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle,
+    private val savedStateHandle: SavedStateHandle,
     private val matchUseCases: MatchUseCases,
     private val authUseCases: AuthUseCases
 ): ViewModel() {
     private var currentKey: String? = savedStateHandle.get<String>("key")
 
-    val state = MutableStateFlow(Match())
-    val isEditEnabled = MutableStateFlow(currentKey == null)
-    val isNewMatch = MutableStateFlow(currentKey == null)
+    val state = MutableStateFlow(
+        savedStateHandle.get<Match>("state") ?: Match()
+    )
+    val isEditEnabled = MutableStateFlow(
+        savedStateHandle.get<Boolean>("isEditEnabled") ?: (currentKey == null)
+    )
+    val isNewMatch = MutableStateFlow(
+        savedStateHandle.get<Boolean>("isNewMatch") ?: (currentKey == null)
+    )
 
     private var job: Job? = null
 
     init {
+        updateSaveStateHandle()
         getMatch(currentKey)
+    }
+
+    private fun updateSaveStateHandle() {
+        state.onEach {
+            savedStateHandle["state"] = it
+        }.launchIn(viewModelScope)
+        isEditEnabled.onEach {
+            savedStateHandle["isEditEnabled"] = it
+        }.launchIn(viewModelScope)
+        isNewMatch.onEach {
+            savedStateHandle["isNewMatch"] = it
+        }.launchIn(viewModelScope)
     }
 
     fun save() {
@@ -78,13 +97,13 @@ class EditorViewModel @Inject constructor(
     private fun getMatch(key: String?) {
         key?.let {
             job?.cancel()
-            job = matchUseCases.getMatch(it)
-                .onEach { newMatch ->
+            job = viewModelScope.launch {
+                matchUseCases.getMatch(it).collectLatest { newMatch ->
                     newMatch?.let { match ->
                         state.update { match }
                     }
                 }
-                .launchIn(viewModelScope)
+            }
         }
     }
 

@@ -1,11 +1,13 @@
 package com.phoenix.powerplayscorer.feature_editor.domain.model
 
+import android.os.Parcelable
 import androidx.annotation.Keep
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.google.firebase.firestore.ServerTimestamp
 import com.phoenix.powerplayscorer.feature_editor.domain.util.autoId
+import kotlinx.parcelize.Parcelize
 
+@Parcelize
 @Keep
 @Entity
 data class Match(
@@ -15,7 +17,6 @@ data class Match(
     val title: String = "",
     val createStamp: Long = 0,
     val editStamp: Long = 0,
-    @ServerTimestamp
     val uploadStamp: Long? = null,
     val totalPoints: Int = 0,
     val twoTeams: Boolean = false,
@@ -42,4 +43,4 @@ data class Match(
     val circuitCompleted: Boolean = false,
     val endParked1: Boolean = false,
     val endParked2: Boolean = false
-)
+) : Parcelable
