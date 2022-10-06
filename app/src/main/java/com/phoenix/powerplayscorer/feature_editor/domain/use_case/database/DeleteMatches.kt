@@ -9,12 +9,6 @@ class DeleteMatches(
     suspend operator fun invoke(
         deletedMatches: List<Match>
     ) {
-        repository.insertMatches(
-            deletedMatches.map { match ->
-                match.copy(
-                    uploadStamp = -1
-                )
-            }
-        )
+        repository.deleteMatches(deletedMatches)
     }
 }

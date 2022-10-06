@@ -22,6 +22,14 @@ data class Match(
     val twoTeams: Boolean = false,
     val alliance: Boolean? = null,
 
+    /**
+     * 0 = to be uploaded
+     * 1 = uploaded
+     * 2 = to be updated
+     */
+    val status :Int = 0,
+    val toBeDeleted: Boolean = false,
+
     val autoTerminal: Int = 0,
     val autoGroundJunction: Int = 0,
     val autoLowJunction: Int = 0,

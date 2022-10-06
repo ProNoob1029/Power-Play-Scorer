@@ -8,6 +8,7 @@ fun FirebaseMatch.toMatch (key: String, uid: String): Match {
         userId = uid,
         uploadStamp = this.uploadStamp.toLong(),
         title = this.title,
+        status = 1,
         alliance = this.alliance,
         autoGroundJunction = this.autoGroundJunction,
         autoHighJunction = this.autoHighJunction,

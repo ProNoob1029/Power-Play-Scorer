@@ -6,14 +6,11 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface MatchDao {
-    @Query("SELECT * FROM `match` WHERE `userId` = :userId AND (`uploadStamp` IS null OR `uploadStamp` != -1)")
+    @Query("SELECT * FROM `match` WHERE `userId` = :userId AND NOT toBeDeleted")
     fun getMatches(userId: String): Flow<List<Match>>
 
-    @Query("SELECT * FROM `match` WHERE `userId` = :userId AND `uploadStamp` = -1")
+    @Query("SELECT * FROM `match` WHERE `userId` = :userId AND status = 1 AND toBeDeleted")
     fun getDeletedMatchesFlow(userId: String): Flow<List<Match>>
-
-    @Query("SELECT * FROM `match` WHERE `userId` = :userId AND `uploadStamp` = -1")
-    suspend fun getDeletedMatches(userId: String): List<Match>
 
     @Query("SELECT * FROM `match` WHERE `key` = :key")
     fun getMatchByKey(key: String): Flow<Match?>
@@ -39,13 +36,16 @@ interface MatchDao {
     @Query("DELETE FROM `match` WHERE `key`IN (:keyList)")
     suspend fun deleteMatchListByKeys(keyList: List<String>)
 
-    @Query("SELECT MAX(uploadStamp) AS newestUpload FROM `match` WHERE `userId` = :userId AND (`uploadStamp` IS null OR `uploadStamp` != -1)")
+    @Query("SELECT MAX(uploadStamp) AS newestUpload FROM `match` WHERE `userId` = :userId AND status = 1 AND NOT toBeDeleted")
     suspend fun getLatestUploadStamp(userId: String): Long?
 
-    @Query("SELECT * FROM `match` WHERE uploadStamp IS null AND `userId` = :userId")
-    fun getMatchesNotUploaded(userId: String): Flow<List<Match>>
+    @Query("SELECT * FROM `match` WHERE status = 0 AND NOT toBeDeleted AND `userId` = :userId")
+    fun getMatchesToBeUploaded(userId: String): Flow<List<Match>>
 
-    @Query("SELECT `key` FROM `Match` WHERE NOT (`uploadStamp` IS null OR `uploadStamp` = -1) AND userId = :userId")
+    @Query("SELECT * FROM `match` WHERE status = 2 AND NOT toBeDeleted AND `userId` = :userId")
+    fun getMatchesToBeUpdated(userId: String): Flow<List<Match>>
+
+    @Query("SELECT `key` FROM `Match` WHERE status = 1 AND userId = :userId")
     suspend fun getUploadedMatchesKeys(userId: String): List<String>
 
 }

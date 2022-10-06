@@ -6,6 +6,7 @@ import com.phoenix.powerplayscorer.feature_editor.domain.model.Match
 import com.phoenix.powerplayscorer.feature_editor.domain.use_case.database.MatchUseCases
 import com.phoenix.powerplayscorer.feature_editor.domain.util.Order
 import com.phoenix.powerplayscorer.feature_editor.domain.util.OrderType
+import com.phoenix.powerplayscorer.feature_editor.domain.util.autoId
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.*
@@ -53,7 +54,12 @@ class ListViewModel @Inject constructor(
                 val deletedMatches = listState.list.filter {
                     listState.selectedItems.contains(it.key)
                 }
-                recentlyDeletedMatches = deletedMatches
+                recentlyDeletedMatches = deletedMatches.map {
+                    it.copy(
+                        key = autoId(),
+                        status = 0
+                    )
+                }
                 matchUseCases.deleteMatches(deletedMatches)
             }
             _state.update { it.copy(selectedItems = emptyList()) }

@@ -1,5 +1,5 @@
 package com.phoenix.powerplayscorer.feature_editor.data.repository
-
+/*
 import android.content.ContentValues.TAG
 import android.util.Log
 import com.google.firebase.firestore.DocumentChange
@@ -35,6 +35,13 @@ class RepositoryImpl (
     init {
         scope.launch {
             supervisorScope {
+                launch {
+                    dao.getDeletedMatchesFlow("offline").collect {
+                        if (it.isEmpty()) return@collect
+                        dao.deleteMatches(it)
+                        Log.e(TAG, "Offline matches deleted")
+                    }
+                }
                 authUseCases.getUserIdFlow().collect { _uid ->
                     Log.e(TAG, "New uid: $_uid")
                     newMatchListener?.remove()
@@ -46,10 +53,10 @@ class RepositoryImpl (
                             syncDeletedMatches(uid)
                         }
                         uploadJob = launch {
-                            upload(uid)
+                            upload(uid, this@supervisorScope)
                         }
                         deleteJob = launch {
-                            delete(uid)
+                            delete(uid, this@supervisorScope)
                         }
                         val latestStamp = async {
                             dao.getLatestUploadStamp(uid)
@@ -66,6 +73,7 @@ class RepositoryImpl (
                                         if (uploadedKeys.contains(match.key))
                                             willBeDeleted.add(match)
                                     }
+                                    Log.e(TAG, "${willBeDeleted.size} matches will now be deleted")
                                     dao.deleteMatches(willBeDeleted)
                                 }
                             }
@@ -98,7 +106,7 @@ class RepositoryImpl (
     private fun documentListener(latestStamp: Long?, id: String, onSnapshotFinished: (newMatches: List<Match>, deletedMatches: List<Match>) -> Unit): ListenerRegistration {
         val path = db.collection("users").document(id).collection("matches")
         Log.e(TAG, "Latest stamp: $latestStamp")
-        return path.whereGreaterThan(
+        return path.whereGreaterThanOrEqualTo(
             "uploadStamp",
             (latestStamp ?: 0).toTimestamp()
         ).addSnapshotListener { snapshot, error ->
@@ -124,33 +132,55 @@ class RepositoryImpl (
         }
     }
 
-    private suspend fun upload(id: String) {
+    private suspend fun upload(
+        id: String,
+        scope: CoroutineScope
+    ) {
         dao.getMatchesNotUploaded(id).collect { matches ->
             if (matches.isEmpty()) return@collect
             val uRef = db.collection("users").document(id)
-            val batch = db.batch()
-            for (match in matches.take(250)) {
-                val mRef = uRef.collection("matches").document(match.key)
-                batch.set(mRef, match.toFirebaseMatch())
-                batch.update(uRef, "matchesIds", FieldValue.arrayUnion(match.key))
+            for (match in matches) {
+                scope.launch {
+                    val batch = db.batch()
+                    val mRef = uRef.collection("matches").document(match.key)
+                    batch.update(uRef, "matchesIds", FieldValue.arrayUnion(match.key))
+                    batch.set(mRef, match.toFirebaseMatch())
+                    Log.e(TAG, "Attempting to upload a match")
+                    try {
+                        batch.commit().await()
+                        Log.e(TAG, "Uploaded a new batch")
+                    } catch (e: Exception) {
+                        Log.e(TAG, "Faliled to upload a match")
+                        throw e
+                    }
+                }
             }
-            batch.commit().await()
-            Log.e(TAG, "Uploaded a new batch")
         }
     }
 
-    private suspend fun delete(id: String) {
+    private suspend fun delete(
+        id: String,
+        scope: CoroutineScope
+    ) {
         dao.getDeletedMatchesFlow(id).collect { matches ->
             if (matches.isEmpty()) return@collect
             val uRef = db.collection("users").document(id)
-            val batch = db.batch()
-            for (match in matches.take(250)) {
-                val mRef = uRef.collection("matches").document(match.key)
-                batch.delete(mRef)
-                batch.update(uRef, "matchesIds", FieldValue.arrayRemove(match.key))
+            for (match in matches) {
+                scope.launch {
+                    val batch = db.batch()
+                    val mRef = uRef.collection("matches").document(match.key)
+                    batch.update(uRef, "matchesIds", FieldValue.arrayRemove(match.key))
+                    batch.delete(mRef)
+                    Log.e(TAG, "Attempting to delete a match")
+                    try {
+                        batch.commit().await()
+                        Log.e(TAG, "Deleted a batch")
+                    } catch(e: Exception) {
+                        Log.e(TAG, "Match delete failed")
+                        throw e
+                    }
+                }
             }
-            batch.commit().await()
-            Log.e(TAG, "Deleted a batch")
         }
     }
 
@@ -185,4 +215,4 @@ class RepositoryImpl (
     override suspend fun getMatchesByKeyList(keyList: List<String>): List<Match> {
         return dao.getMatchesByKeyList(keyList)
     }
-}
+}*/
