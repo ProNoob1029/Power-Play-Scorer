@@ -54,7 +54,7 @@ class EditorViewModel @Inject constructor(
         viewModelScope.launch {
             state.value.let { match ->
                 matchUseCases.saveMatch(
-                    if (isNewMatch.value) {
+                    /*if (isNewMatch.value) {
                         match.copy(
                             userId = authUseCases.getUserId(),
                             createStamp = System.currentTimeMillis(),
@@ -68,7 +68,14 @@ class EditorViewModel @Inject constructor(
                             totalPoints = calculateTotalPoints(match),
                             uploadStamp = null
                         )
-                    }
+                    }*/
+                    match.copy(
+                        userId = authUseCases.getUserId(),
+                        createStamp = if (match.createStamp == 0L) System.currentTimeMillis() else match.createStamp,
+                        editStamp = System.currentTimeMillis(),
+                        totalPoints = calculateTotalPoints(match),
+                        uploadStamp = null
+                    )
                 )
                 currentKey = match.key
                 isNewMatch.update { false }
@@ -99,8 +106,10 @@ class EditorViewModel @Inject constructor(
             job?.cancel()
             job = viewModelScope.launch {
                 matchUseCases.getMatch(it).collectLatest { newMatch ->
-                    newMatch?.let { match ->
-                        state.update { match }
+                    if (newMatch != null) {
+                        state.update { newMatch }
+                    } else {
+                        state.update { Match() }
                     }
                 }
             }

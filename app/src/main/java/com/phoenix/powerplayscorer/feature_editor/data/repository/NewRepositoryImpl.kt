@@ -102,8 +102,14 @@ class NewRepositoryImpl(
                         mRef.set(match.toFirebaseMatch()).await()
                         Log.e(TAG, "Match update successful")
                     } catch (e: Exception) {
-                        Log.e(TAG, "Match update failed")
-                        throw e
+                        Log.e(TAG, "Match update failed", e)
+                        Log.e(TAG, "Sending match to upload")
+                        dao.insertMatch(
+                            match.copy(
+                                status = 0
+                            )
+                        )
+                        //throw e
                     }
                 }
             }

@@ -86,9 +86,18 @@ class ListViewModel @Inject constructor(
         job = viewModelScope.launch {
             matchUseCases.getMatches(order = newOrder).collectLatest {newList ->
                 _state.update {
+                    val newSelectedItems = it.selectedItems.toMutableList()
+                    val newIds = newList.map { match ->
+                        match.key
+                    }
+                    for (id in it.selectedItems) {
+                        if (newIds.contains(id).not())
+                            newSelectedItems.remove(id)
+                    }
                     it.copy(
                         list = newList,
-                        order = newOrder
+                        order = newOrder,
+                        selectedItems = newSelectedItems
                     )
                 }
             }
