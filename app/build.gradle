@@ -5,6 +5,7 @@ plugins {
     id 'kotlin-kapt'
     id 'dagger.hilt.android.plugin'
     id 'kotlin-parcelize'
+    id "com.guardsquare.appsweep" version "latest.release"
 }
 
 android {
@@ -27,6 +28,7 @@ android {
     buildTypes {
         release {
             minifyEnabled true
+            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             versionNameSuffix '-release'
             signingConfig signingConfigs.debug
@@ -54,6 +56,9 @@ android {
             excludes += '/META-INF/{AL2.0,LGPL2.1}'
         }
     }
+    appsweep {
+        apiKey 'gs_appsweep_TC7BwCp_ww2mHFTr1VGqpjC2xLWF7rzbWPn8CKz5'
+    }
 }
 
 dependencies {
@@ -63,7 +68,7 @@ dependencies {
     implementation 'androidx.activity:activity-compose:1.6.0'
     implementation "androidx.compose.ui:ui:$compose_version"
     implementation "androidx.compose.ui:ui-tooling-preview:$compose_version"
-    implementation 'androidx.compose.material3:material3:1.0.0-beta03'
+    implementation 'androidx.compose.material3:material3:1.0.0-rc01'
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'

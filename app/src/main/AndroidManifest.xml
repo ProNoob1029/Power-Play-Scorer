@@ -12,7 +12,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.PowerPlayScorer"
-        tools:targetApi="31">
+        tools:targetApi="33"
+        android:usesCleartextTraffic="false">
         <profileable android:shell="true"/>
         <activity
             android:name=".feature_editor.presentation.MainActivity"
