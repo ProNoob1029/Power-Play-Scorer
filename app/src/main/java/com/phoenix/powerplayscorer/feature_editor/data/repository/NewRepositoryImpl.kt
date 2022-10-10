@@ -46,6 +46,7 @@ class NewRepositoryImpl(
                 updateJob?.cancel()
                 deleteJob?.cancel()
                 _uid?.let { uid ->
+                    startUp(uid)
                     uploadJob = launch {
                         upload(uid, this)
                     }
@@ -60,6 +61,13 @@ class NewRepositoryImpl(
                     newMatchListener = newMatchesListener(latestStamp, uid, this)
                 }
             }
+        }
+    }
+
+    private suspend fun startUp(uid: String) {
+        val path = db.collection("users").document(uid)
+        if (path.get().await().exists().not()) {
+            path.set(User())
         }
     }
 
@@ -150,7 +158,10 @@ class NewRepositoryImpl(
                 return@addSnapshotListener
             }
             if (snapshot == null) return@addSnapshotListener
-            if (snapshot.exists().not()) return@addSnapshotListener
+            if (snapshot.exists().not()) {
+                path.set(User())
+                return@addSnapshotListener
+            }
             if (snapshot.metadata.hasPendingWrites()) return@addSnapshotListener
             Log.e(TAG, "New deleted matches snapshot")
             val onlineMatchList = snapshot.toObject<User>()?.matchesIds ?: emptyList()

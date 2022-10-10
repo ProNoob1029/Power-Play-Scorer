@@ -37,9 +37,11 @@ class AuthRepositoryImpl: AuthRepository {
     }
 
     override fun register(email: String, password: String): Flow<Response<Unit>> = flow {
+        var registerDone = false
         try {
             emit(Response.Loading)
             currentAuth.value.createUserWithEmailAndPassword(email, password).await()
+            registerDone = true
             currentUid.transformWhile { _it ->
                 if (_it == null) {
                     true
@@ -52,7 +54,25 @@ class AuthRepositoryImpl: AuthRepository {
             }
             emit(Response.Success(Unit))
         } catch(e: Exception) {
-            emit(Response.Failure(e.message))
+            if (registerDone) {
+                currentUser.transformWhile { _it ->
+                    if (_it == null) {
+                        true
+                    } else {
+                        emit(_it)
+                        false
+                    }
+                }.collect { user ->
+                    try {
+                        user.delete().await()
+                        emit(Response.Failure(e.message))
+                    } catch (ex: Exception) {
+                        emit(Response.Failure(ex.message))
+                    }
+                }
+            } else {
+                emit(Response.Failure(e.message))
+            }
         }
     }
 
