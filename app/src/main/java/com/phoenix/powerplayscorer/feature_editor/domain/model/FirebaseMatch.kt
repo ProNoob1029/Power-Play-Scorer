@@ -14,6 +14,7 @@ data class FirebaseMatch(
     val totalPoints: Int = 0,
     val twoTeams: Boolean = false,
     val alliance: Boolean? = null,
+    val favorite: Boolean = false,
 
     val autoTerminal: Int = 0,
     val autoGroundJunction: Int = 0,

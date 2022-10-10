@@ -21,6 +21,7 @@ data class Match(
     val totalPoints: Int = 0,
     val twoTeams: Boolean = false,
     val alliance: Boolean? = null,
+    val favorite: Boolean = false,
 
     /**
      * 0 = to be uploaded
