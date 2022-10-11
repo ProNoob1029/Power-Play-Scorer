@@ -6,6 +6,8 @@ plugins {
     id 'dagger.hilt.android.plugin'
     id 'kotlin-parcelize'
     id "com.guardsquare.appsweep" version "latest.release"
+    id 'com.google.firebase.crashlytics'
+    id 'com.google.firebase.firebase-perf'
 }
 
 android {
@@ -34,14 +36,19 @@ android {
     buildTypes {
         release {
             minifyEnabled true
-            shrinkResources true
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt')
             versionNameSuffix '-release'
             signingConfig signingConfigs.debug
+            applicationIdSuffix '.release'
         }
         debug {
             versionNameSuffix '-debug'
             applicationIdSuffix '.debug'
+        }
+        production {
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
     compileOptions {
@@ -88,6 +95,9 @@ dependencies {
     implementation 'com.google.firebase:firebase-firestore-ktx'
     implementation 'com.google.firebase:firebase-auth-ktx'
     implementation 'com.google.firebase:firebase-appcheck-playintegrity'
+    implementation 'com.google.firebase:firebase-crashlytics-ktx'
+    implementation 'com.google.firebase:firebase-analytics-ktx'
+    implementation 'com.google.firebase:firebase-perf-ktx'
 
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1'
     implementation 'androidx.annotation:annotation:1.5.0'
