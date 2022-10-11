@@ -1,5 +1,6 @@
 package com.phoenix.powerplayscorer.feature_editor.presentation.settings
 
+import android.content.Intent
 import android.view.HapticFeedbackConstants
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,8 +13,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
@@ -24,6 +27,7 @@ fun SettingsScreen(
     viewModel: SettingsViewModel = hiltViewModel()
 ) {
     val view = LocalView.current
+    val context = LocalContext.current
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     var job: Job? = null
@@ -71,6 +75,13 @@ fun SettingsScreen(
                 }
             ) {
                 Text(text = "Sign out")
+            }
+            Button(
+                onClick = {
+                    context.startActivity(Intent(context, OssLicensesMenuActivity::class.java))
+                }
+            ) {
+                Text(text = "Licenses")
             }
         }
     }
