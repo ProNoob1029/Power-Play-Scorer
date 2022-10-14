@@ -15,6 +15,8 @@
         tools:targetApi="33"
         android:usesCleartextTraffic="false">
         <profileable android:shell="true"/>
+        <meta-data android:name="google_analytics_adid_collection_enabled" android:value="false" />
+        <meta-data android:name="google_analytics_default_allow_ad_personalization_signals" android:value="false" />
         <activity
             android:name=".feature_editor.presentation.MainActivity"
             android:exported="true"
@@ -36,5 +38,4 @@
             android:name="com.google.android.gms.oss.licenses.OssLicensesActivity"
             android:theme="@style/Theme.AppCompat.DayNight" />
     </application>
-
 </manifest>
