@@ -242,12 +242,22 @@ class NewRepositoryImpl(
     }
 
     override suspend fun deleteMatches(matchList: List<Match>) {
+        val onlineMatches = mutableListOf<Match>()
+        val offlineMatches = mutableListOf<Match>()
+        for (match in matchList) {
+            if (match.userId == "offline") {
+                offlineMatches.add(match)
+            } else {
+                onlineMatches.add(match)
+            }
+        }
         dao.insertMatches(
-            matchList.map {
+            onlineMatches.map {
                 it.copy(
                     toBeDeleted = true
                 )
             }
         )
+        dao.deleteMatches(offlineMatches)
     }
 }
