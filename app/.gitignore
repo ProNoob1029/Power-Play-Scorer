@@ -3,3 +3,5 @@
 /src/production/google-services.json
 /src/release/google-services.json
 /src/debug/google-services.json
+/production/app-production.aab
+/release/app-release.aab
