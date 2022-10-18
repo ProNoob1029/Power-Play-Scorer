@@ -22,7 +22,7 @@ This is the repository for the open source app [FTC Scorer - Power Play](https:/
 - Sorting
 - Account deletion
 - Data delete & export
-- Better error repository error handling
+- Better repository error handling
 - RO localisation
 - UI Performance optimisation
 - Analytics opt in
